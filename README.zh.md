@@ -1,79 +1,62 @@
-
-
-# DataAgent-Bench Starter Kit
+# data-agents
 
 [English](README.md) | 中文
 
-[官方网站](https://dataagent.top)
-[Demo 数据集](https://drive.google.com/file/d/1n8vrRIjhVz0STj1DYZ7fSNL2JHtswu4J/view?usp=share_link)
-[Discord](https://discord.gg/vRr7uyK9)
+这个仓库是我参加 **KDD Cup 2026 DataAgent-Bench** 的比赛项目。  
+整体代码基于官方 starter kit 做了整理和修改，用来承载我自己的实验、运行流程和迭代记录。
 
+## 这个仓库是什么
 
+- 一个基于官方 baseline 改出来的个人参赛代码仓库
+- 一个用于查看任务、运行单题和批量跑 benchmark 的本地工程
+- 一个集中管理 prompt、runtime、配置和实验产物的位置
 
-> 面向 KDD Cup 2026 DataAgent-Bench 挑战的官方 starter kit。仓库默认读取 `data/public/input/`，并为后续评测生成预测结果。
+## 项目结构
 
-## Overview
+```text
+.
+├── configs/
+├── src/data_agent_baseline/
+├── artifacts/
+├── README.md
+├── README.zh.md
+└── pyproject.toml
+```
 
+主要目录说明：
 
-| 项目             | 内容                                       |
-| -------------- | ---------------------------------------- |
-| 数据输入           | `data/public/input/`                     |
-| 公开 demo 标准答案   | `data/public/output/task_<id>/gold.csv`  |
-| hidden test 数据 | 仅提供 `input/`，不提供 `output/`               |
-| 入口命令           | `uv run dabench <command> --config PATH` |
-| 默认输出目录         | `artifacts/runs/`                        |
-
+- `src/data_agent_baseline/agents/`：模型调用、prompt 和 ReAct 主循环
+- `src/data_agent_baseline/tools/`：文件系统、SQLite、Python 执行和答案提交工具
+- `src/data_agent_baseline/run/`：单任务和批量运行逻辑
+- `src/data_agent_baseline/benchmark/`：任务结构和数据集加载逻辑
+- `configs/react_baseline.example.yaml`：示例配置文件
 
 ## 快速开始
 
-1. 请先按照 `uv` 官方安装指南安装 `uv`：
-  - [https://docs.astral.sh/uv/getting-started/installation/](https://docs.astral.sh/uv/getting-started/installation/)
-2. 在 macOS 和 Linux 上，官方独立安装命令为：
-  ```bash
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-  ```
-3. 安装项目依赖：
-  ```bash
-   uv sync
-  ```
-4. 检查数据集根目录是否可见：
-  ```bash
-   uv run dabench status --config configs/react_baseline.example.yaml
-  ```
-5. 运行 baseline：
-  ```bash
-   uv run dabench run-benchmark --config configs/react_baseline.example.yaml
-  ```
+1. 先安装 `uv`，参考官方文档：[uv installation](https://docs.astral.sh/uv/getting-started/installation/)
+2. 安装依赖：
 
-## 数据集
-
-公开 demo 数据集默认位于 `data/public/input/`。每个任务目录结构如下：
-
-```text
-data/public/input/task_<id>/
-├── task.json
-└── context/
+```bash
+uv sync
 ```
 
-公开 demo 的标准答案文件单独放在 `data/public/output/task_<id>/gold.csv`。
-hidden test set 只提供 `input/`，不会包含 `output/`。
+3. 基于 `configs/react_baseline.example.yaml` 准备你自己的配置
+4. 检查项目状态和数据路径：
 
-`task.json` 包含：
+```bash
+uv run dabench status --config configs/react_baseline.example.yaml
+```
 
-- `task_id`
-- `difficulty`
-- `question`
+5. 运行单题或批量 benchmark：
 
-`context/` 中可能包含一种或多种数据：
-
-- CSV 文件
-- JSON 文件
-- SQLite / DB 文件
-- 文本文档
+```bash
+uv run dabench run-task task_1 --config configs/react_baseline.example.yaml
+uv run dabench run-benchmark --config configs/react_baseline.example.yaml
+```
 
 ## 配置
 
-示例配置文件位于 `configs/react_baseline.example.yaml`。
+示例配置如下：
 
 ```yaml
 dataset:
@@ -88,110 +71,48 @@ agent:
 
 run:
   output_dir: artifacts/runs
-  run_id:
-  max_workers: 4
+  run_id: example_run_id
+  max_workers: 8
   task_timeout_seconds: 600
 ```
 
-配置字段说明：
+关键字段：
 
-
-| 字段                         | 含义                                          |
-| -------------------------- | ------------------------------------------- |
-| `dataset.root_path`        | 公开 demo `input/` 数据集根目录。相对路径按项目根目录解析。       |
-| `agent.model`              | 模型名称。                                       |
-| `agent.api_base`           | OpenAI-compatible 接口根地址。                    |
-| `agent.api_key`            | API key，直接从配置文件读取。                          |
-| `agent.max_steps`          | 单个任务允许的最大 ReAct 步数。                         |
-| `agent.temperature`        | 模型采样温度。                                     |
-| `run.output_dir`           | 运行产物输出目录。                                   |
-| `run.run_id`               | 可选，指定运行目录名。不传时默认使用 UTC 时间戳；必须是单个目录名，已存在会报错。 |
-| `run.max_workers`          | `run-benchmark` 并行 worker 数。                |
-| `run.task_timeout_seconds` | 单个任务允许的最长墙钟时间。设为 `0` 或负数可关闭任务级超时。           |
-
+- `dataset.root_path`：本地数据集路径
+- `agent.model`：模型名称
+- `agent.api_base`：兼容 OpenAI 的接口地址
+- `agent.api_key`：模型调用密钥
+- `run.output_dir`：运行输出目录
+- `run.run_id`：可选的运行名称
+- `run.max_workers`：并行 worker 数
 
 ## CLI
 
 ```bash
-uv run dabench <command> --config PATH [options]
+uv run dabench <command> --config PATH
 ```
 
+可用命令：
 
-| 命令              | 作用                             | 示例                                                                              |
-| --------------- | ------------------------------ | ------------------------------------------------------------------------------- |
-| `status`        | 查看项目路径、配置路径、数据集根目录和公开任务数量。     | `uv run dabench status --config configs/react_baseline.example.yaml`            |
-| `inspect-task`  | 查看任务元信息，并列出 `context/` 下可访问文件。 | `uv run dabench inspect-task task_1 --config configs/react_baseline.local.yaml` |
-| `run-task`      | 对单个任务运行 baseline，并写出结果。        | `uv run dabench run-task task_1 --config configs/react_baseline.local.yaml`     |
-| `run-benchmark` | 批量运行整个公开数据集。                   | `uv run dabench run-benchmark --config configs/react_baseline.local.yaml`       |
-
-
-`run-benchmark` 还支持 `--limit N`，用于限制任务数量。
-
-## Tools
-
-当前暴露给模型的工具有：
-
-
-| 工具                      | 作用                                     | 输入                   |
-| ----------------------- | -------------------------------------- | -------------------- |
-| `list_context`          | 列出 `context/` 下的文件和目录。                 | `max_depth`          |
-| `read_csv`              | 读取 CSV 预览。                             | `path`、`max_rows`    |
-| `read_json`             | 读取 JSON 预览。                            | `path`、`max_chars`   |
-| `read_doc`              | 读取文本文档预览。                              | `path`、`max_chars`   |
-| `inspect_sqlite_schema` | 查看 SQLite / DB 文件中的表结构。                | `path`               |
-| `execute_context_sql`   | 对 `context/` 内 SQLite / DB 文件执行只读 SQL。 | `path`、`sql`、`limit` |
-| `execute_python`        | 在任务 `context/` 目录内执行任意 Python 代码。      | `code`               |
-| `answer`                | 提交最终答案表格并结束当前任务。                       | `columns`、`rows`     |
-
-
-所有文件路径都必须是相对于任务 `context/` 目录的相对路径。
+- `status`：查看项目路径和数据集状态
+- `inspect-task`：查看单个任务和 `context/` 文件列表
+- `run-task`：运行单个任务
+- `run-benchmark`：批量运行多个任务
 
 ## 输出
 
-每个任务运行后可能生成：
+运行结果会写到 `artifacts/runs/<run_id>/` 下。
 
-- `trace.json`
-- `prediction.csv`
+常见产物包括：
 
-单任务产物路径：
+- `summary.json`
+- `<task_id>/trace.json`
+- `<task_id>/prediction.csv`
 
-```text
-artifacts/runs/<run_id>/<task_id>/
-├── trace.json
-└── prediction.csv
-```
+## 赛事链接
 
-批量运行还会额外生成：
-
-```text
-artifacts/runs/<run_id>/summary.json
-```
-
-## Contact
-
-- 问题反馈： [https://github.com/HKUSTDial/kddcup2026-data-agents-starter-kit/issues](https://github.com/HKUSTDial/kddcup2026-data-agents-starter-kit/issues)
-- 官方网站： [https://dataagent.top](https://dataagent.top)
-- Discord： [https://discord.gg/vRr7uyK9](https://discord.gg/vRr7uyK9)
-- 微信公众号：`数据智能与分析实验室 DIAL`
-
-
-|      |         |       |
-| ---- | ------- | ----- |
-| 官方网站 | Discord | 微信公众号 |
-
-
-## 主要模块
-
-
-| 模块                                             | 责任                                               |
-| ---------------------------------------------- | ------------------------------------------------ |
-| `src/data_agent_baseline/benchmark/dataset.py` | 公开数据集加载器                                         |
-| `src/data_agent_baseline/tools/filesystem.py`  | `list_context`、`read_csv`、`read_json`、`read_doc` |
-| `src/data_agent_baseline/tools/python_exec.py` | `execute_python`                                 |
-| `src/data_agent_baseline/tools/sqlite.py`      | `inspect_sqlite_schema`、`execute_context_sql`    |
-| `src/data_agent_baseline/tools/registry.py`    | 工具注册与终止型 `answer`                                |
-| `src/data_agent_baseline/agents/prompt.py`     | system prompt、task prompt、observation prompt     |
-| `src/data_agent_baseline/agents/react.py`      | 基于 JSON action 协议的 ReAct runtime                 |
-| `src/data_agent_baseline/run/runner.py`        | 单任务和批量运行逻辑                                       |
+- 官方网站：[dataagent.top](https://dataagent.top)
+- Discord：[Join the community](https://discord.gg/vRr7uyK9)
+- 官方 starter kit：[HKUSTDial/kddcup2026-data-agents-starter-kit](https://github.com/HKUSTDial/kddcup2026-data-agents-starter-kit)
 
 
