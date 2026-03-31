@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import contextlib
 import io
-import multiprocessing
 import os
+import shutil
+import subprocess
 import sys
-import tempfile
 import traceback
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -69,78 +70,96 @@ def _read_captured_stream(path: Path) -> str:
     return path.read_text(encoding="utf-8", errors="replace")
 
 
-def _run_python_code(
-    context_root: str,
+def _write_bootstrap_script(script_path: Path, code: str) -> None:
+    encoded_user_code = repr(code)
+    script_path.write_text(
+        "\n".join(
+            [
+                "from pathlib import Path",
+                "import os",
+                "import traceback",
+                "",
+                "context_root = Path(os.environ['DABENCH_CONTEXT_ROOT'])",
+                "scratch_root = Path(os.environ['DABENCH_SCRATCH_ROOT'])",
+                "os.chdir(scratch_root)",
+                f"user_code = {encoded_user_code}",
+                "namespace = {",
+                "    '__builtins__': __builtins__,",
+                "    '__name__': '__main__',",
+                "    'Path': Path,",
+                "    'context_root': context_root,",
+                "    'scratch_root': scratch_root,",
+                "}",
+                "try:",
+                "    exec(compile(user_code, str(context_root / '<user_code>'), 'exec'), namespace, namespace)",
+                "except BaseException as exc:  # noqa: BLE001",
+                "    print(traceback.format_exc(), file=os.sys.stderr, end='')",
+                "    raise",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+
+def execute_python_code(
+    context_root: Path,
+    scratch_root: Path,
     code: str,
-    stdout_path: str,
-    stderr_path: str,
-    queue: multiprocessing.Queue[Any],
-) -> None:
-    namespace: dict[str, Any] = {
-        "__builtins__": __builtins__,
-        "__name__": "__main__",
-        "context_root": context_root,
-        "Path": Path,
-    }
-    resolved_stdout_path = Path(stdout_path)
-    resolved_stderr_path = Path(stderr_path)
+    *,
+    timeout_seconds: int = 30,
+) -> dict[str, Any]:
+    resolved_context_root = context_root.resolve()
+    resolved_scratch_root = scratch_root.resolve()
+    resolved_scratch_root.mkdir(parents=True, exist_ok=True)
+    exec_dir = resolved_scratch_root / f"exec-{uuid.uuid4().hex[:8]}"
+    exec_dir.mkdir(parents=True, exist_ok=False)
+    stdout_path = exec_dir / "stdout.txt"
+    stderr_path = exec_dir / "stderr.txt"
+    script_path = exec_dir / "run_user_code.py"
+    stdout_path.write_text("", encoding="utf-8")
+    stderr_path.write_text("", encoding="utf-8")
+    _write_bootstrap_script(script_path, code)
 
     try:
-        os.chdir(context_root)
-        with _capture_process_streams(resolved_stdout_path, resolved_stderr_path):
-            exec(code, namespace, namespace)
-        queue.put({"success": True})
-    except BaseException as exc:  # noqa: BLE001
-        queue.put(
-            {
-                "success": False,
-                "error": str(exc),
-                "traceback": traceback.format_exc(),
-            }
-        )
+        env = os.environ.copy()
+        env["DABENCH_CONTEXT_ROOT"] = resolved_context_root.as_posix()
+        env["DABENCH_SCRATCH_ROOT"] = resolved_scratch_root.as_posix()
 
+        with stdout_path.open("w", encoding="utf-8", errors="replace", newline="") as stdout_handle:
+            with stderr_path.open("w", encoding="utf-8", errors="replace", newline="") as stderr_handle:
+                try:
+                    completed = subprocess.run(
+                        [sys.executable, str(script_path)],
+                        cwd=resolved_scratch_root,
+                        env=env,
+                        stdout=stdout_handle,
+                        stderr=stderr_handle,
+                        timeout=timeout_seconds,
+                        text=True,
+                        check=False,
+                    )
+                except subprocess.TimeoutExpired:
+                    completed = None
 
-def execute_python_code(context_root: Path, code: str, *, timeout_seconds: int = 30) -> dict[str, Any]:
-    resolved_context_root = context_root.resolve()
-    with tempfile.TemporaryDirectory() as temp_dir:
-        stdout_path = Path(temp_dir) / "stdout.txt"
-        stderr_path = Path(temp_dir) / "stderr.txt"
-        stdout_path.write_text("", encoding="utf-8")
-        stderr_path.write_text("", encoding="utf-8")
-
-        queue: multiprocessing.Queue[Any] = multiprocessing.Queue()
-        process = multiprocessing.Process(
-            target=_run_python_code,
-            args=(
-                resolved_context_root.as_posix(),
-                code,
-                stdout_path.as_posix(),
-                stderr_path.as_posix(),
-                queue,
-            ),
-        )
-        process.start()
-        process.join(timeout_seconds)
-
-        if process.is_alive():
-            process.terminate()
-            process.join()
+        if completed is None:
             return {
                 "success": False,
+                "context_root": resolved_context_root.as_posix(),
+                "scratch_root": resolved_scratch_root.as_posix(),
                 "output": _read_captured_stream(stdout_path),
                 "stderr": _read_captured_stream(stderr_path),
                 "error": f"Python execution timed out after {timeout_seconds} seconds.",
             }
 
-        if queue.empty():
-            return {
-                "success": False,
-                "output": _read_captured_stream(stdout_path),
-                "stderr": _read_captured_stream(stderr_path),
-                "error": "Python execution exited without returning a result.",
-            }
-
-        result = queue.get()
-        result["output"] = _read_captured_stream(stdout_path)
-        result["stderr"] = _read_captured_stream(stderr_path)
+        result: dict[str, Any] = {
+            "success": completed.returncode == 0,
+            "context_root": resolved_context_root.as_posix(),
+            "scratch_root": resolved_scratch_root.as_posix(),
+            "output": _read_captured_stream(stdout_path),
+            "stderr": _read_captured_stream(stderr_path),
+        }
+        if completed.returncode != 0:
+            result["error"] = f"Python execution failed with exit code {completed.returncode}."
         return result
+    finally:
+        shutil.rmtree(exec_dir, ignore_errors=True)

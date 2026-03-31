@@ -1,11 +1,12 @@
 """
-Evaluate easy tasks using official KDD Cup 2026 scoring rules:
+Evaluate predictions using official KDD Cup 2026 scoring rules:
 - Column names are IGNORED
 - Each column is an unordered value vector
 - All gold columns must be fully covered by prediction columns
 - Extra prediction columns are OK
 - Score is binary: 1 (all gold columns matched) or 0
 """
+import argparse
 import csv
 from pathlib import Path
 
@@ -81,8 +82,7 @@ def score_task(gold_path, pred_path):
         return 0, f"{len(missing)}/{len(gold_vectors)} gold col(s) missing:\n" + "\n".join(details)
 
 
-def evaluate(task_ids, label):
-    run_dir = Path("artifacts/runs/run_v3_memory_guard")
+def evaluate(task_ids, label, run_dir: Path):
     gold_dir = Path("data/public/output")
 
     total = len(task_ids)
@@ -116,8 +116,20 @@ def get_difficulty(tid):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Score predictions under a run directory vs public gold.")
+    parser.add_argument(
+        "--run-dir",
+        type=Path,
+        default=Path("artifacts/runs/run_v4_structured"),
+        help="Run output root containing <task_id>/prediction.csv (default: artifacts/runs/run_v4_structured)",
+    )
+    args = parser.parse_args()
+    run_dir = args.run_dir
+
+    print(f"Run directory: {run_dir.resolve()}")
+
     # Easy tasks
-    easy_correct, easy_total = evaluate(EASY_IDS, "Easy Tasks")
+    easy_correct, easy_total = evaluate(EASY_IDS, "Easy Tasks", run_dir)
 
     # All tasks by difficulty
     by_diff = {}
@@ -133,7 +145,7 @@ if __name__ == "__main__":
     grand_total = 0
     for diff in ["easy", "medium", "hard", "extreme"]:
         ids = by_diff.get(diff, [])
-        c, t = evaluate(ids, f"{diff.upper()} ({len(ids)} tasks)")
+        c, t = evaluate(ids, f"{diff.upper()} ({len(ids)} tasks)", run_dir)
         grand_correct += c
         grand_total += t
 

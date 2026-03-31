@@ -9,12 +9,17 @@ from typing import Any
 from data_agent_baseline.agents.model import ModelAdapter, ModelMessage, ModelStep
 from data_agent_baseline.agents.prompt import (
     REACT_SYSTEM_PROMPT,
-    build_notes_prompt,
+    build_memory_prompt,
     build_observation_prompt,
     build_system_prompt,
     build_task_prompt,
 )
-from data_agent_baseline.agents.runtime import AgentRunResult, AgentRuntimeState, StepRecord
+from data_agent_baseline.agents.runtime import (
+    AgentRunResult,
+    AgentRuntimeState,
+    OutputMappingItem,
+    StepRecord,
+)
 from data_agent_baseline.benchmark.schema import PublicTask
 from data_agent_baseline.tools.registry import ToolRegistry
 
@@ -71,6 +76,8 @@ def parse_model_step(raw_response: str) -> ModelStep:
 
 
 class ReActAgent:
+    _QUERY_ACTIONS = frozenset({"execute_python", "execute_context_sql"})
+
     def __init__(
         self,
         *,
@@ -94,8 +101,8 @@ class ReActAgent:
         messages = [ModelMessage(role="system", content=system_content)]
 
         task_content = build_task_prompt(task)
-        if state.notes:
-            task_content += "\n\n" + build_notes_prompt(state.notes)
+        if state.memory.has_content():
+            task_content += "\n\n" + build_memory_prompt(state.memory)
         messages.append(ModelMessage(role="user", content=task_content))
 
         for step in state.steps:
@@ -105,10 +112,84 @@ class ReActAgent:
             )
         return messages
 
-    _QUERY_ACTIONS = frozenset({"execute_python", "execute_context_sql"})
+    @staticmethod
+    def _append_unique(items: list[str], value: str) -> None:
+        if value not in items:
+            items.append(value)
 
-    def _check_answer_guards(self, state: AgentRuntimeState) -> str | None:
-        """Return an error message if the agent is not allowed to answer yet."""
+    def _apply_memory_patch(self, state: AgentRuntimeState, memory_patch: dict[str, Any] | None) -> None:
+        if not memory_patch:
+            return
+
+        append_patch = memory_patch.get("append")
+        if isinstance(append_patch, dict):
+            section = append_patch.get("section")
+            fact = append_patch.get("fact")
+            if isinstance(section, str) and isinstance(fact, str) and fact.strip():
+                bucket = getattr(state.memory, section, None)
+                if isinstance(bucket, list):
+                    self._append_unique(bucket, fact.strip())
+
+        output_mapping_patch = memory_patch.get("set_output_mapping")
+        if isinstance(output_mapping_patch, dict):
+            raw_mappings = output_mapping_patch.get("mappings", [])
+            if isinstance(raw_mappings, list):
+                normalized_items: list[OutputMappingItem] = []
+                for item in raw_mappings:
+                    if not isinstance(item, dict):
+                        continue
+                    normalized_items.append(
+                        OutputMappingItem(
+                            question_target=str(item.get("question_target", "")),
+                            source_kind=str(item.get("source_kind", "")),
+                            source_refs=list(item.get("source_refs", [])),
+                            output_columns=list(item.get("output_columns", [])),
+                            granularity=str(item.get("granularity", "")),
+                            format_rule=str(item.get("format_rule", "")),
+                        )
+                    )
+                state.memory.output_mapping = normalized_items
+
+        answer_shape_patch = memory_patch.get("set_answer_shape")
+        if isinstance(answer_shape_patch, dict):
+            state.memory.answer_shape.columns = list(answer_shape_patch.get("columns", []))
+            state.memory.answer_shape.expected_rows = answer_shape_patch.get("expected_rows")
+            state.memory.answer_shape.sort_requirement = str(
+                answer_shape_patch.get("sort_requirement", "")
+            )
+            state.memory.answer_shape.value_format_rules = list(
+                answer_shape_patch.get("value_format_rules", [])
+            )
+
+        plan_patch = memory_patch.get("set_plan")
+        if isinstance(plan_patch, dict):
+            state.memory.plan.done = list(plan_patch.get("done", []))
+            state.memory.plan.todo = list(plan_patch.get("todo", []))
+            state.memory.plan.next_action = str(plan_patch.get("next_action", ""))
+
+    @staticmethod
+    def _outstanding_todo_items(state: AgentRuntimeState) -> list[str]:
+        allowed = {"submit answer", "call answer", "final answer", "answer"}
+        return [
+            item
+            for item in state.memory.plan.todo
+            if item.strip() and item.strip().lower() not in allowed
+        ]
+
+    @staticmethod
+    def _mapped_output_columns(state: AgentRuntimeState) -> list[str]:
+        columns: list[str] = []
+        for item in state.memory.output_mapping:
+            for column in item.output_columns:
+                if column not in columns:
+                    columns.append(column)
+        return columns
+
+    def _check_answer_guards(
+        self,
+        state: AgentRuntimeState,
+        action_input: dict[str, Any],
+    ) -> str | None:
         has_successful_query = any(
             s.action in self._QUERY_ACTIONS and s.ok for s in state.steps
         )
@@ -118,10 +199,44 @@ class ReActAgent:
                 "(execute_python or execute_context_sql) before submitting an answer. "
                 "Go back and query the data."
             )
-        if not state.notes:
+        if not state.memory.answer_shape.columns:
             return (
-                "REJECTED: You must record at least one note via take_note before "
-                "submitting an answer. Summarize your key findings first."
+                "REJECTED: You must define the answer shape via set_answer_shape before "
+                "submitting an answer. Record the final columns and row expectations first."
+            )
+        if not state.memory.output_mapping:
+            return (
+                "REJECTED: You must define an output mapping via set_output_mapping before "
+                "submitting an answer. Map each question target to source fields or expressions first."
+            )
+        mapped_columns = self._mapped_output_columns(state)
+        if mapped_columns != state.memory.answer_shape.columns:
+            return (
+                "REJECTED: set_output_mapping and set_answer_shape disagree about the final "
+                "output columns. Update them so they match exactly before answering."
+            )
+        submitted_columns = action_input.get("columns")
+        if submitted_columns != state.memory.answer_shape.columns:
+            return (
+                "REJECTED: answer.columns must exactly match the columns recorded via "
+                "set_answer_shape. Update the memory or fix the answer columns."
+            )
+        if not state.memory.evidence:
+            return (
+                "REJECTED: You must record at least one verified result in memory via "
+                "record_memory(section='evidence', ...) before submitting an answer."
+            )
+        if not state.memory.plan.is_set():
+            return (
+                "REJECTED: You must set a structured plan via set_plan before submitting "
+                "an answer. Summarize what is done and what remains."
+            )
+        outstanding_todo = self._outstanding_todo_items(state)
+        if outstanding_todo:
+            return (
+                "REJECTED: Your plan still has unfinished todo items: "
+                + "; ".join(outstanding_todo)
+                + ". Finish them or update the plan before answering."
             )
         return None
 
@@ -133,13 +248,8 @@ class ReActAgent:
             try:
                 model_step = parse_model_step(raw_response)
 
-                if model_step.action == "take_note":
-                    note = model_step.action_input.get("note", "")
-                    if isinstance(note, str) and note.strip():
-                        state.notes.append(note.strip())
-
                 if model_step.action == "answer":
-                    guard_error = self._check_answer_guards(state)
+                    guard_error = self._check_answer_guards(state, model_step.action_input)
                     if guard_error is not None:
                         observation = {"ok": False, "error": guard_error}
                         state.steps.append(
@@ -151,6 +261,7 @@ class ReActAgent:
                                 raw_response=raw_response,
                                 observation=observation,
                                 ok=False,
+                                memory_snapshot=state.memory.to_dict(),
                             )
                         )
                         if self.progress_callback is not None:
@@ -158,21 +269,26 @@ class ReActAgent:
                         continue
 
                 tool_result = self.tools.execute(task, model_step.action, model_step.action_input)
+                if tool_result.ok:
+                    self._apply_memory_patch(state, tool_result.memory_patch)
+
                 observation = {
                     "ok": tool_result.ok,
                     "tool": model_step.action,
                     "content": tool_result.content,
                 }
-                step_record = StepRecord(
-                    step_index=step_index,
-                    thought=model_step.thought,
-                    action=model_step.action,
-                    action_input=model_step.action_input,
-                    raw_response=raw_response,
-                    observation=observation,
-                    ok=tool_result.ok,
+                state.steps.append(
+                    StepRecord(
+                        step_index=step_index,
+                        thought=model_step.thought,
+                        action=model_step.action,
+                        action_input=model_step.action_input,
+                        raw_response=raw_response,
+                        observation=observation,
+                        ok=tool_result.ok,
+                        memory_snapshot=state.memory.to_dict(),
+                    )
                 )
-                state.steps.append(step_record)
                 if tool_result.is_terminal:
                     state.answer = tool_result.answer
                 if self.progress_callback is not None:
@@ -193,6 +309,7 @@ class ReActAgent:
                         raw_response=raw_response,
                         observation=observation,
                         ok=False,
+                        memory_snapshot=state.memory.to_dict(),
                     )
                 )
                 if self.progress_callback is not None:
@@ -206,4 +323,5 @@ class ReActAgent:
             answer=state.answer,
             steps=list(state.steps),
             failure_reason=state.failure_reason,
+            memory=state.memory,
         )

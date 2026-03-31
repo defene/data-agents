@@ -16,6 +16,7 @@ class TaskRecord:
 class TaskAssets:
     task_dir: Path
     context_dir: Path
+    scratch_dir: Path | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -42,6 +43,20 @@ class PublicTask:
     @property
     def context_dir(self) -> Path:
         return self.assets.context_dir
+
+    @property
+    def scratch_dir(self) -> Path | None:
+        return self.assets.scratch_dir
+
+    def with_scratch_dir(self, scratch_dir: Path) -> "PublicTask":
+        return PublicTask(
+            record=self.record,
+            assets=TaskAssets(
+                task_dir=self.task_dir,
+                context_dir=self.context_dir,
+                scratch_dir=scratch_dir,
+            ),
+        )
 
 
 @dataclass(frozen=True, slots=True)

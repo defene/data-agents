@@ -95,6 +95,7 @@ def _failure_run_result_payload(
     *,
     answer: dict[str, Any] | None = None,
     steps: list[dict[str, Any]] | None = None,
+    memory: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return {
         "task_id": task_id,
@@ -102,11 +103,16 @@ def _failure_run_result_payload(
         "steps": list(steps or []),
         "failure_reason": failure_reason,
         "succeeded": False,
+        "memory": dict(memory or {}),
     }
 
 
 def _snapshot_path(run_output_dir: Path, task_id: str) -> Path:
     return run_output_dir / task_id / "_progress_snapshot.json"
+
+
+def _task_scratch_dir(run_output_dir: Path, task_id: str) -> Path:
+    return run_output_dir / task_id / "scratch"
 
 
 def _write_progress_snapshot(snapshot_path: Path, task_id: str, state: AgentRuntimeState) -> None:
@@ -116,6 +122,7 @@ def _write_progress_snapshot(snapshot_path: Path, task_id: str, state: AgentRunt
         answer=state.answer,
         steps=list(state.steps),
         failure_reason=state.failure_reason,
+        memory=state.memory,
     )
     payload["updated_at"] = datetime.now(timezone.utc).isoformat()
     temp_path = snapshot_path.with_suffix(f"{snapshot_path.suffix}.tmp")
@@ -136,12 +143,15 @@ def _run_single_task_core(
     *,
     task_id: str,
     config: AppConfig,
+    run_output_dir: Path,
     model=None,
     tools: ToolRegistry | None = None,
     snapshot_path: Path | None = None,
 ) -> dict[str, Any]:
     public_dataset = DABenchPublicDataset(config.dataset.root_path)
-    task = public_dataset.get_task(task_id)
+    task = public_dataset.get_task(task_id).with_scratch_dir(_task_scratch_dir(run_output_dir, task_id))
+    if task.scratch_dir is not None:
+        task.scratch_dir.mkdir(parents=True, exist_ok=True)
 
     effective_model = model or build_model_adapter(config)
 
@@ -165,6 +175,7 @@ def _run_single_task_in_subprocess(
     task_id: str,
     config: AppConfig,
     queue: multiprocessing.Queue[Any],
+    run_output_dir: str,
     snapshot_path: str,
 ) -> None:
     try:
@@ -174,6 +185,7 @@ def _run_single_task_in_subprocess(
                 "run_result": _run_single_task_core(
                     task_id=task_id,
                     config=config,
+                    run_output_dir=Path(run_output_dir),
                     snapshot_path=Path(snapshot_path),
                 ),
             }
@@ -191,13 +203,13 @@ def _run_single_task_in_subprocess(
 def _run_single_task_with_timeout(*, task_id: str, config: AppConfig, run_output_dir: Path) -> dict[str, Any]:
     timeout_seconds = config.run.task_timeout_seconds
     if timeout_seconds <= 0:
-        return _run_single_task_core(task_id=task_id, config=config)
+        return _run_single_task_core(task_id=task_id, config=config, run_output_dir=run_output_dir)
 
     queue: multiprocessing.Queue[Any] = multiprocessing.Queue()
     snapshot_path = _snapshot_path(run_output_dir, task_id)
     process = multiprocessing.Process(
         target=_run_single_task_in_subprocess,
-        args=(task_id, config, queue, str(snapshot_path)),
+        args=(task_id, config, queue, str(run_output_dir), str(snapshot_path)),
     )
     process.start()
 
@@ -218,7 +230,10 @@ def _run_single_task_with_timeout(*, task_id: str, config: AppConfig, run_output
         process.join(timeout=2.0)
         if result.get("ok"):
             return dict(result["run_result"])
-        return _failure_run_result_payload(task_id, f"Task failed with uncaught error: {result['error']}")
+        return _failure_run_result_payload(
+            task_id,
+            f"Task failed with uncaught error: {result['error']}",
+        )
 
     if not process.is_alive():
         exit_code = process.exitcode
@@ -240,6 +255,7 @@ def _run_single_task_with_timeout(*, task_id: str, config: AppConfig, run_output
         f"Task timed out after {timeout_seconds} seconds.",
         answer=snapshot_payload.get("answer") if snapshot_payload else None,
         steps=snapshot_payload.get("steps", []) if snapshot_payload else [],
+        memory=snapshot_payload.get("memory") if snapshot_payload else None,
     )
 
 
@@ -285,8 +301,15 @@ def run_single_task(
             run_output_dir=run_output_dir,
         )
     else:
-        run_result = _run_single_task_core(task_id=task_id, config=config, model=model, tools=tools)
+        run_result = _run_single_task_core(
+            task_id=task_id,
+            config=config,
+            run_output_dir=run_output_dir,
+            model=model,
+            tools=tools,
+        )
     run_result["e2e_elapsed_seconds"] = round(perf_counter() - started_at, 3)
+    run_result["scratch_dir"] = str(_task_scratch_dir(run_output_dir, task_id))
     return _write_task_outputs(task_id, run_output_dir, run_result)
 
 
