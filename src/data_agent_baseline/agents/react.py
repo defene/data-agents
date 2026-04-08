@@ -212,7 +212,7 @@ class ReActAgent:
                 question=task.question,
                 context_listing=tool_result.content,
             )
-            update_finish_memory(state, remaining_steps=self.config.max_steps)
+            update_finish_memory(state, question=task.question, remaining_steps=self.config.max_steps)
 
     def _should_block_low_value_exploration(
         self,
@@ -233,7 +233,7 @@ class ReActAgent:
 
         for step_index in range(1, self.config.max_steps + 1):
             remaining_steps = self.config.max_steps - step_index + 1
-            update_finish_memory(state, remaining_steps=remaining_steps)
+            update_finish_memory(state, question=task.question, remaining_steps=remaining_steps)
             messages = self._build_messages(task, state, remaining_steps=remaining_steps)
             raw_response = self.model.complete(messages)
             try:
@@ -273,8 +273,8 @@ class ReActAgent:
                         state,
                         model_step.action_input,
                     )
-                    update_finish_memory(state, remaining_steps=remaining_steps)
-                    guard_error = validate_answer_submission(state, normalized_action_input)
+                    update_finish_memory(state, question=task.question, remaining_steps=remaining_steps)
+                    guard_error = validate_answer_submission(task, state, normalized_action_input)
                     model_step = ModelStep(
                         thought=model_step.thought,
                         action=model_step.action,
@@ -304,6 +304,7 @@ class ReActAgent:
                     self._apply_memory_patch(state, tool_result.memory_patch)
                 update_finish_memory(
                     state,
+                    question=task.question,
                     remaining_steps=self.config.max_steps - step_index,
                 )
 
@@ -349,6 +350,7 @@ class ReActAgent:
                 )
                 update_finish_memory(
                     state,
+                    question=task.question,
                     remaining_steps=self.config.max_steps - step_index,
                 )
                 if self.progress_callback is not None:

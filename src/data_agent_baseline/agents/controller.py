@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import re
+
 from data_agent_baseline.agents.router import build_source_index, infer_task_route
 from data_agent_baseline.agents.runtime import AgentRuntimeState, FinishMemory, OutputMappingItem
 from data_agent_baseline.benchmark.schema import PublicTask
 
 QUERY_ACTIONS = frozenset({"execute_python", "execute_context_sql"})
+NAN_LIKE_TOKENS = frozenset({"nan", "none", "null", "n/a", "na"})
 
 
 def _has_successful_query(state: AgentRuntimeState) -> bool:
@@ -18,6 +21,59 @@ def _mapped_output_columns(state: AgentRuntimeState) -> list[str]:
             if column not in columns:
                 columns.append(column)
     return columns
+
+
+def _normalize_question(question: str) -> str:
+    return re.sub(r"\s+", " ", question.strip().lower())
+
+
+def _is_row_extraction_question(question: str) -> bool:
+    lowered = _normalize_question(question)
+    starters = (
+        "list ",
+        "show ",
+        "which ",
+        "what are ",
+        "identify ",
+        "write ",
+        "name ",
+        "return ",
+    )
+    return lowered.startswith(starters) or " full name " in f" {lowered} "
+
+
+def _is_ratio_or_percentage_question(question: str) -> bool:
+    lowered = _normalize_question(question)
+    markers = ("percentage", "percent", "ratio", "proportion", "share", "how many times")
+    return any(marker in lowered for marker in markers)
+
+
+def _is_average_question(question: str) -> bool:
+    lowered = _normalize_question(question)
+    return any(marker in lowered for marker in ("average", "avg", "mean"))
+
+
+def _evidence_text(state: AgentRuntimeState) -> str:
+    return " ".join(state.memory.evidence).strip().lower()
+
+
+def _has_nan_like_text(text: str) -> bool:
+    return any(token in text for token in NAN_LIKE_TOKENS)
+
+
+def _has_zero_result_text(text: str) -> bool:
+    markers = (
+        "no rows",
+        "no match",
+        "no matches",
+        "empty",
+        "[]",
+        "count=0",
+        "count: 0",
+        "zero ",
+        "=0",
+    )
+    return any(marker in text for marker in markers)
 
 
 def bootstrap_memory_from_context(
@@ -54,10 +110,12 @@ def _route_guidance(state: AgentRuntimeState) -> str:
 def update_finish_memory(
     state: AgentRuntimeState,
     *,
+    question: str,
     remaining_steps: int | None = None,
 ) -> None:
     has_query = _has_successful_query(state)
     has_evidence = bool(state.memory.evidence)
+    evidence_text = _evidence_text(state)
     contract_misaligned = bool(
         state.memory.output_mapping
         and state.memory.answer_shape.columns
@@ -71,8 +129,12 @@ def update_finish_memory(
         missing_requirements.append("at least one verified evidence fact")
     if contract_misaligned:
         missing_requirements.append("an aligned answer contract")
+    if has_evidence and _is_average_question(question) and _has_nan_like_text(evidence_text):
+        missing_requirements.append("a resolved numeric value instead of NaN/None")
+    if has_evidence and _is_row_extraction_question(question) and _has_zero_result_text(evidence_text):
+        missing_requirements.append("at least one concrete result row before answering")
 
-    ready_to_answer = has_query and has_evidence and not contract_misaligned
+    ready_to_answer = has_query and not missing_requirements
 
     if ready_to_answer and remaining_steps is not None and remaining_steps <= 3:
         guidance = "Enough evidence is already available. Stop exploring and submit the answer now."
@@ -81,6 +143,10 @@ def update_finish_memory(
             "You already have enough verified evidence. Prefer answering next, or at most lock the "
             "final columns before answering."
         )
+    elif has_evidence and _is_average_question(question) and _has_nan_like_text(evidence_text):
+        guidance = "The current result is NaN-like. Resolve the mapping or computation to a concrete numeric value before answering."
+    elif has_evidence and _is_row_extraction_question(question) and _has_zero_result_text(evidence_text):
+        guidance = "The current evidence suggests an empty result table. Re-check joins, mappings, or filters before answering."
     elif has_query and not has_evidence:
         guidance = "Record one concise evidence fact from verified results, then answer."
     else:
@@ -143,6 +209,7 @@ def normalize_answer_submission(
 
 
 def validate_answer_submission(
+    task: PublicTask,
     state: AgentRuntimeState,
     action_input: dict[str, object],
 ) -> str | None:
@@ -155,8 +222,29 @@ def validate_answer_submission(
         return "REJECTED: Record at least one verified evidence fact before submitting an answer."
 
     submitted_columns = action_input.get("columns")
+    submitted_rows = action_input.get("rows")
     if not isinstance(submitted_columns, list) or not submitted_columns:
         return "REJECTED: answer.columns must be a non-empty list of strings."
+    if not isinstance(submitted_rows, list):
+        return "REJECTED: answer.rows must be a list."
+    if not submitted_rows:
+        return (
+            "REJECTED: Do not submit an empty answer table. If the answer is a numeric zero, "
+            "return one row with 0; otherwise re-check your joins, mappings, or filters."
+        )
+
+    flat_cells = [str(cell).strip() for row in submitted_rows if isinstance(row, list) for cell in row]
+    flat_cells_lower = [cell.lower() for cell in flat_cells]
+    if len(submitted_rows) <= 1 and any(cell in NAN_LIKE_TOKENS for cell in flat_cells_lower):
+        return (
+            "REJECTED: Do not submit NaN/None-like final values. Resolve the computation to a "
+            "concrete numeric or text answer first."
+        )
+    if _is_ratio_or_percentage_question(task.question) and any("%" in cell for cell in flat_cells):
+        return (
+            "REJECTED: For ratio or percentage questions, submit the final numeric value without a "
+            "percent sign."
+        )
 
     if state.memory.answer_shape.columns and submitted_columns != state.memory.answer_shape.columns:
         return (
