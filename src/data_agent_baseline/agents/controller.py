@@ -34,6 +34,11 @@ def bootstrap_memory_from_context(
 def _route_guidance(state: AgentRuntimeState) -> str:
     route = state.memory.route
     if route.solver_mode == "doc_link":
+        if route.task_type == "ratio_percentage":
+            return (
+                "Build the filtered set first, resolve any linked IDs or labels, then compute the "
+                "numerator, denominator, and final ratio before answering."
+            )
         return (
             "Use structured data to resolve target rows or IDs first, then read only the document "
             "chunks needed to extract the linked final values."
@@ -42,10 +47,20 @@ def _route_guidance(state: AgentRuntimeState) -> str:
         return "Prefer one precise SQL query over repeated previews."
     if route.solver_mode == "tabular_first":
         return "Stay in the structured files unless a document is clearly required."
-    if route.task_type == "compare":
+    if route.task_type == "entity_compare":
         return "Resolve both sides of the comparison, extract the final values, then answer."
+    if route.task_type == "ratio_percentage":
+        return "Resolve the filtered set, compute numerator and denominator, then calculate the final ratio or percentage."
+    if route.task_type == "count_distinct":
+        return "Resolve the distinct key, deduplicate once, count the result, then answer."
+    if route.task_type == "average":
+        return "Filter once, compute the average once, verify the value formatting, then answer."
+    if route.task_type == "count":
+        return "Filter once, count once, record evidence, then answer."
     if route.task_type == "aggregate":
         return "Filter once, aggregate once, record evidence, then answer."
+    if route.task_type == "multi_row_extract":
+        return "Find the matching rows, project only the final columns, then answer."
     if route.task_type == "lookup":
         return "Find the target record directly, resolve any linked label, then answer."
     return "Take the shortest verifiable path to the answer."
