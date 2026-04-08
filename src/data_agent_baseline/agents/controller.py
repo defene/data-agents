@@ -76,6 +76,25 @@ def _has_zero_result_text(text: str) -> bool:
     return any(marker in text for marker in markers)
 
 
+def _single_non_empty_cell(rows: list[object]) -> str | None:
+    if len(rows) != 1 or not isinstance(rows[0], list):
+        return None
+    non_empty = [str(cell).strip() for cell in rows[0] if str(cell).strip()]
+    if len(non_empty) != 1:
+        return None
+    return non_empty[0]
+
+
+def _extract_ratio_numeric_value(value: str) -> str | None:
+    match = re.fullmatch(
+        r"\s*([-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)\s*%?\s*(?:\([^)]*\))?\s*",
+        value,
+    )
+    if match is None:
+        return None
+    return match.group(1)
+
+
 def bootstrap_memory_from_context(
     state: AgentRuntimeState,
     *,
@@ -152,6 +171,12 @@ def update_finish_memory(
     else:
         guidance = _route_guidance(state)
 
+    if _is_ratio_or_percentage_question(question):
+        guidance = (
+            f"{guidance} For ratio or percentage questions, submit one raw numeric value only, "
+            "with no percent sign or explanatory text."
+        )
+
     state.memory.finish = FinishMemory(
         ready_to_answer=ready_to_answer,
         missing_requirements=missing_requirements,
@@ -178,13 +203,26 @@ def normalize_answer_submission(
 
     normalized_action_input = dict(action_input)
     normalized_action_input["columns"] = normalized_columns
+    if isinstance(raw_rows, list):
+        normalized_action_input["rows"] = raw_rows
+
+    if _is_ratio_or_percentage_question(task.question) and isinstance(raw_rows, list):
+        scalar_value = _single_non_empty_cell(raw_rows)
+        normalized_value = (
+            _extract_ratio_numeric_value(scalar_value) if scalar_value is not None else None
+        )
+        if normalized_value is not None:
+            normalized_action_input["rows"] = [[normalized_value]]
 
     if not state.memory.answer_shape.columns:
         state.memory.answer_shape.columns = list(normalized_columns)
-        if isinstance(raw_rows, list):
-            state.memory.answer_shape.expected_rows = len(raw_rows)
+        if isinstance(normalized_action_input.get("rows"), list):
+            state.memory.answer_shape.expected_rows = len(normalized_action_input["rows"])
         state.memory.answer_shape.sort_requirement = (
-            "single summary row" if isinstance(raw_rows, list) and len(raw_rows) <= 1 else ""
+            "single summary row"
+            if isinstance(normalized_action_input.get("rows"), list)
+            and len(normalized_action_input["rows"]) <= 1
+            else ""
         )
         state.memory.answer_shape.value_format_rules = ["preserve source formatting"]
 
@@ -195,7 +233,12 @@ def normalize_answer_submission(
                 source_kind="derived_expression",
                 source_refs=list(state.memory.evidence[:3]) or list(state.memory.route.primary_sources),
                 output_columns=list(normalized_columns),
-                granularity="aggregate" if isinstance(raw_rows, list) and len(raw_rows) <= 1 else "detail_rows",
+                granularity=(
+                    "aggregate"
+                    if isinstance(normalized_action_input.get("rows"), list)
+                    and len(normalized_action_input["rows"]) <= 1
+                    else "detail_rows"
+                ),
                 format_rule="preserve source formatting",
             )
         ]
@@ -245,6 +288,15 @@ def validate_answer_submission(
             "REJECTED: For ratio or percentage questions, submit the final numeric value without a "
             "percent sign."
         )
+    if _is_ratio_or_percentage_question(task.question):
+        scalar_value = _single_non_empty_cell(submitted_rows)
+        if scalar_value is not None:
+            normalized_value = _extract_ratio_numeric_value(scalar_value)
+            if normalized_value is None and any(char.isalpha() for char in scalar_value):
+                return (
+                    "REJECTED: For ratio or percentage questions, return one raw numeric value only, "
+                    "with no explanatory text."
+                )
 
     if state.memory.answer_shape.columns and submitted_columns != state.memory.answer_shape.columns:
         return (
