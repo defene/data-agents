@@ -3,11 +3,17 @@ from __future__ import annotations
 import re
 
 from data_agent_baseline.agents.router import build_source_index, infer_task_route
-from data_agent_baseline.agents.runtime import AgentRuntimeState, FinishMemory, OutputMappingItem
+from data_agent_baseline.agents.runtime import (
+    AgentRuntimeState,
+    AnswerContractMemory,
+    FinishMemory,
+    OutputMappingItem,
+)
 from data_agent_baseline.benchmark.schema import PublicTask
 
 QUERY_ACTIONS = frozenset({"execute_python", "execute_context_sql"})
 NAN_LIKE_TOKENS = frozenset({"nan", "none", "null", "n/a", "na"})
+PATH_EXTENSIONS = (".csv", ".json", ".txt", ".md", ".parquet", ".tsv", ".xlsx")
 
 
 def _has_successful_query(state: AgentRuntimeState) -> bool:
@@ -53,6 +59,28 @@ def _is_average_question(question: str) -> bool:
     return any(marker in lowered for marker in ("average", "avg", "mean"))
 
 
+def _is_numeric_scalar_question(question: str) -> bool:
+    lowered = _normalize_question(question)
+    markers = (
+        "count",
+        "number of",
+        "how many",
+        "how much",
+        "total",
+        "sum",
+        "average",
+        "avg",
+        "mean",
+        "ratio",
+        "percentage",
+        "percent",
+        "proportion",
+        "share",
+        "how many times",
+    )
+    return any(marker in lowered for marker in markers)
+
+
 def _evidence_text(state: AgentRuntimeState) -> str:
     return " ".join(state.memory.evidence).strip().lower()
 
@@ -76,6 +104,104 @@ def _has_zero_result_text(text: str) -> bool:
     return any(marker in text for marker in markers)
 
 
+def _infer_answer_contract(state: AgentRuntimeState, *, question: str) -> AnswerContractMemory:
+    route = state.memory.route
+    if _is_row_extraction_question(question) or route.output_hint == "multi_row_table":
+        return AnswerContractMemory(
+            response_kind="detail_rows",
+            require_single_value=False,
+            require_raw_value_only=False,
+            forbid_path_reference=True,
+            notes=[
+                "return the actual result rows",
+                "do not answer with a scratch file path or filename",
+            ],
+        )
+    if _is_numeric_scalar_question(question):
+        return AnswerContractMemory(
+            response_kind="scalar_numeric",
+            require_single_value=True,
+            require_raw_value_only=True,
+            forbid_path_reference=True,
+            notes=[
+                "return one raw numeric value only",
+                "no narration, explanation, or scratch file path",
+            ],
+        )
+    if route.output_hint in {"single_row_lookup", "single_value_or_single_row"} or route.task_type in {
+        "lookup",
+        "compare",
+    }:
+        return AnswerContractMemory(
+            response_kind="scalar_label",
+            require_single_value=False,
+            require_raw_value_only=True,
+            forbid_path_reference=True,
+            notes=[
+                "return the exact raw field value only",
+                "avoid descriptive prose or scratch file paths",
+            ],
+        )
+    return AnswerContractMemory()
+
+
+def _contract_guidance(state: AgentRuntimeState) -> str:
+    contract = state.memory.answer_contract
+    if contract.response_kind == "scalar_numeric":
+        return "Answer with one raw numeric cell only, with no prose, ratio narration, units, or file paths."
+    if contract.response_kind == "scalar_label":
+        return "Answer with the exact raw field value only, not a descriptive phrase or file path."
+    if contract.response_kind == "detail_rows":
+        return "Answer with actual table rows, not a scratch file path."
+    return ""
+
+
+def _looks_like_path_reference(value: str) -> bool:
+    lowered = value.strip().lower()
+    if not lowered:
+        return False
+    if re.match(r"^[a-z]:[\\/]", value):
+        return True
+    if lowered.startswith(("context/", "context\\", "scratch/", "scratch\\", "./", ".\\")):
+        return True
+    return any(lowered.endswith(ext) for ext in PATH_EXTENSIONS) and ("/" in value or "\\" in value)
+
+
+def _single_non_empty_cell(rows: list[object]) -> str | None:
+    if len(rows) != 1 or not isinstance(rows[0], list):
+        return None
+    non_empty = [str(cell).strip() for cell in rows[0] if str(cell).strip()]
+    if len(non_empty) != 1:
+        return None
+    return non_empty[0]
+
+
+def _normalize_scalar_label_text(value: str) -> str:
+    text = value.strip().strip("\"'")
+    lowered = text.lower()
+    wrappers = (
+        "the answer is ",
+        "answer: ",
+        "value: ",
+        "result: ",
+        "it is ",
+    )
+    for prefix in wrappers:
+        if lowered.startswith(prefix):
+            return text[len(prefix) :].strip()
+    return text
+
+
+def _extract_normalizable_numeric_scalar(value: str) -> str | None:
+    match = re.fullmatch(
+        r"\s*([-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)\s*%?\s*(?:\([^)]*\))?\s*",
+        value,
+    )
+    if match is None:
+        return None
+    return match.group(1)
+
+
 def bootstrap_memory_from_context(
     state: AgentRuntimeState,
     *,
@@ -85,6 +211,7 @@ def bootstrap_memory_from_context(
     source_index = build_source_index(context_listing)
     state.memory.source_index = source_index
     state.memory.route = infer_task_route(question, source_index)
+    state.memory.answer_contract = _infer_answer_contract(state, question=question)
 
 
 def _route_guidance(state: AgentRuntimeState) -> str:
@@ -135,6 +262,7 @@ def update_finish_memory(
         missing_requirements.append("at least one concrete result row before answering")
 
     ready_to_answer = has_query and not missing_requirements
+    contract_guidance = _contract_guidance(state)
 
     if ready_to_answer and remaining_steps is not None and remaining_steps <= 3:
         guidance = "Enough evidence is already available. Stop exploring and submit the answer now."
@@ -151,6 +279,9 @@ def update_finish_memory(
         guidance = "Record one concise evidence fact from verified results, then answer."
     else:
         guidance = _route_guidance(state)
+
+    if contract_guidance:
+        guidance = f"{guidance} {contract_guidance}".strip()
 
     state.memory.finish = FinishMemory(
         ready_to_answer=ready_to_answer,
@@ -178,13 +309,33 @@ def normalize_answer_submission(
 
     normalized_action_input = dict(action_input)
     normalized_action_input["columns"] = normalized_columns
+    if isinstance(raw_rows, list):
+        normalized_action_input["rows"] = raw_rows
+
+    contract = state.memory.answer_contract
+    if isinstance(raw_rows, list) and contract.response_kind == "scalar_numeric":
+        scalar_value = _single_non_empty_cell(raw_rows)
+        normalized_value = (
+            _extract_normalizable_numeric_scalar(scalar_value) if scalar_value is not None else None
+        )
+        if normalized_value is not None:
+            normalized_action_input["columns"] = [normalized_columns[0]]
+            normalized_action_input["rows"] = [[normalized_value]]
+    elif isinstance(raw_rows, list) and contract.response_kind == "scalar_label":
+        scalar_value = _single_non_empty_cell(raw_rows)
+        if scalar_value is not None:
+            normalized_action_input["columns"] = [normalized_columns[0]]
+            normalized_action_input["rows"] = [[_normalize_scalar_label_text(scalar_value)]]
 
     if not state.memory.answer_shape.columns:
-        state.memory.answer_shape.columns = list(normalized_columns)
-        if isinstance(raw_rows, list):
-            state.memory.answer_shape.expected_rows = len(raw_rows)
+        state.memory.answer_shape.columns = list(normalized_action_input["columns"])
+        if isinstance(normalized_action_input.get("rows"), list):
+            state.memory.answer_shape.expected_rows = len(normalized_action_input["rows"])
         state.memory.answer_shape.sort_requirement = (
-            "single summary row" if isinstance(raw_rows, list) and len(raw_rows) <= 1 else ""
+            "single summary row"
+            if isinstance(normalized_action_input.get("rows"), list)
+            and len(normalized_action_input["rows"]) <= 1
+            else ""
         )
         state.memory.answer_shape.value_format_rules = ["preserve source formatting"]
 
@@ -194,8 +345,13 @@ def normalize_answer_submission(
                 question_target=task.question.strip(),
                 source_kind="derived_expression",
                 source_refs=list(state.memory.evidence[:3]) or list(state.memory.route.primary_sources),
-                output_columns=list(normalized_columns),
-                granularity="aggregate" if isinstance(raw_rows, list) and len(raw_rows) <= 1 else "detail_rows",
+                output_columns=list(normalized_action_input["columns"]),
+                granularity=(
+                    "aggregate"
+                    if isinstance(normalized_action_input.get("rows"), list)
+                    and len(normalized_action_input["rows"]) <= 1
+                    else "detail_rows"
+                ),
                 format_rule="preserve source formatting",
             )
         ]
@@ -235,6 +391,7 @@ def validate_answer_submission(
 
     flat_cells = [str(cell).strip() for row in submitted_rows if isinstance(row, list) for cell in row]
     flat_cells_lower = [cell.lower() for cell in flat_cells]
+    contract = state.memory.answer_contract
     if len(submitted_rows) <= 1 and any(cell in NAN_LIKE_TOKENS for cell in flat_cells_lower):
         return (
             "REJECTED: Do not submit NaN/None-like final values. Resolve the computation to a "
@@ -245,6 +402,35 @@ def validate_answer_submission(
             "REJECTED: For ratio or percentage questions, submit the final numeric value without a "
             "percent sign."
         )
+    if contract.forbid_path_reference:
+        scalar_value = _single_non_empty_cell(submitted_rows)
+        if scalar_value is not None and _looks_like_path_reference(scalar_value):
+            return (
+                "REJECTED: Submit the actual answer values, not a scratch file path or generated "
+                "filename."
+            )
+    if contract.response_kind == "scalar_numeric":
+        scalar_value = _single_non_empty_cell(submitted_rows)
+        if scalar_value is None:
+            return (
+                "REJECTED: This question expects one final numeric cell. Return only the raw numeric "
+                "value."
+            )
+        if _extract_normalizable_numeric_scalar(scalar_value) != scalar_value:
+            return (
+                "REJECTED: Return one raw numeric value only, with no explanatory text or narration."
+            )
+    if contract.response_kind == "detail_rows" and len(submitted_columns) >= 3 and len(submitted_rows) == 1:
+        non_empty_counts = [
+            sum(1 for cell in row if str(cell).strip())
+            for row in submitted_rows
+            if isinstance(row, list)
+        ]
+        if non_empty_counts and max(non_empty_counts) <= 1:
+            return (
+                "REJECTED: Multi-column table answers must contain actual populated result rows, not a "
+                "mostly empty placeholder row."
+            )
 
     if state.memory.answer_shape.columns and submitted_columns != state.memory.answer_shape.columns:
         return (

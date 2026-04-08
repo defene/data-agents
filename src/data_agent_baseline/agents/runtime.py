@@ -83,6 +83,33 @@ class FinishMemory:
 
 
 @dataclass(slots=True)
+class AnswerContractMemory:
+    response_kind: str = ""
+    require_single_value: bool = False
+    require_raw_value_only: bool = False
+    forbid_path_reference: bool = False
+    notes: list[str] = field(default_factory=list)
+
+    def is_set(self) -> bool:
+        return bool(
+            self.response_kind
+            or self.require_single_value
+            or self.require_raw_value_only
+            or self.forbid_path_reference
+            or self.notes
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "response_kind": self.response_kind,
+            "require_single_value": self.require_single_value,
+            "require_raw_value_only": self.require_raw_value_only,
+            "forbid_path_reference": self.forbid_path_reference,
+            "notes": list(self.notes),
+        }
+
+
+@dataclass(slots=True)
 class AnswerShapeMemory:
     columns: list[str] = field(default_factory=list)
     expected_rows: int | None = None
@@ -148,6 +175,7 @@ class StructuredMemory:
     source_index: SourceIndexMemory = field(default_factory=SourceIndexMemory)
     route: RouteMemory = field(default_factory=RouteMemory)
     finish: FinishMemory = field(default_factory=FinishMemory)
+    answer_contract: AnswerContractMemory = field(default_factory=AnswerContractMemory)
     schema: list[str] = field(default_factory=list)
     rules: list[str] = field(default_factory=list)
     entities: list[str] = field(default_factory=list)
@@ -161,6 +189,7 @@ class StructuredMemory:
             self.source_index.has_content()
             or self.route.is_set()
             or self.finish.is_set()
+            or self.answer_contract.is_set()
             or self.schema
             or self.rules
             or self.entities
@@ -175,6 +204,7 @@ class StructuredMemory:
             "source_index": self.source_index.to_dict(),
             "route": self.route.to_dict(),
             "finish": self.finish.to_dict(),
+            "answer_contract": self.answer_contract.to_dict(),
             "schema": list(self.schema),
             "rules": list(self.rules),
             "entities": list(self.entities),

@@ -32,6 +32,8 @@ Answering rules:
 - You MUST record at least one verified finding with `record_memory(section="evidence", ...)` before answering.
 - `set_output_mapping`, `set_answer_shape`, and `set_plan` are optional helpers for complex tasks. Use them when they help you finish faster or clarify a multi-column answer.
 - If the finish guidance says you already have enough evidence, prioritize answering instead of more exploration.\
+- For single-value questions, return the raw final value only in the answer cell, not an explanation, narration, or scratch-file path.
+- For multi-row table questions, return the actual rows, not a file path to a generated file.\
 """
 
 RESPONSE_EXAMPLES = """\
@@ -108,6 +110,15 @@ def build_memory_prompt(memory: StructuredMemory) -> str:
             f"- missing_requirements: {memory.finish.missing_requirements}\n"
             f"- guidance: {memory.finish.guidance or '(none)'}\n"
             f"- remaining_steps: {memory.finish.remaining_steps}"
+        )
+    if memory.answer_contract.is_set():
+        sections.append(
+            "Answer Contract:\n"
+            f"- response_kind: {memory.answer_contract.response_kind or '(unknown)'}\n"
+            f"- require_single_value: {memory.answer_contract.require_single_value}\n"
+            f"- require_raw_value_only: {memory.answer_contract.require_raw_value_only}\n"
+            f"- forbid_path_reference: {memory.answer_contract.forbid_path_reference}\n"
+            f"- notes: {memory.answer_contract.notes}"
         )
     if memory.answer_shape.is_set():
         sections.append(
