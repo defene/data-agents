@@ -7,6 +7,82 @@ from data_agent_baseline.benchmark.schema import AnswerTable
 
 
 @dataclass(slots=True)
+class SourceIndexMemory:
+    tabular_files: list[str] = field(default_factory=list)
+    doc_files: list[str] = field(default_factory=list)
+    db_files: list[str] = field(default_factory=list)
+    other_files: list[str] = field(default_factory=list)
+
+    def has_content(self) -> bool:
+        return bool(self.tabular_files or self.doc_files or self.db_files or self.other_files)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "tabular_files": list(self.tabular_files),
+            "doc_files": list(self.doc_files),
+            "db_files": list(self.db_files),
+            "other_files": list(self.other_files),
+        }
+
+
+@dataclass(slots=True)
+class RouteMemory:
+    task_type: str = ""
+    solver_mode: str = ""
+    question_intent: str = ""
+    primary_sources: list[str] = field(default_factory=list)
+    supporting_sources: list[str] = field(default_factory=list)
+    rationale: str = ""
+    output_hint: str = ""
+
+    def is_set(self) -> bool:
+        return bool(
+            self.task_type
+            or self.solver_mode
+            or self.question_intent
+            or self.primary_sources
+            or self.supporting_sources
+            or self.rationale
+            or self.output_hint
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "task_type": self.task_type,
+            "solver_mode": self.solver_mode,
+            "question_intent": self.question_intent,
+            "primary_sources": list(self.primary_sources),
+            "supporting_sources": list(self.supporting_sources),
+            "rationale": self.rationale,
+            "output_hint": self.output_hint,
+        }
+
+
+@dataclass(slots=True)
+class FinishMemory:
+    ready_to_answer: bool = False
+    missing_requirements: list[str] = field(default_factory=list)
+    guidance: str = ""
+    remaining_steps: int | None = None
+
+    def is_set(self) -> bool:
+        return bool(
+            self.ready_to_answer
+            or self.missing_requirements
+            or self.guidance
+            or self.remaining_steps is not None
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "ready_to_answer": self.ready_to_answer,
+            "missing_requirements": list(self.missing_requirements),
+            "guidance": self.guidance,
+            "remaining_steps": self.remaining_steps,
+        }
+
+
+@dataclass(slots=True)
 class AnswerShapeMemory:
     columns: list[str] = field(default_factory=list)
     expected_rows: int | None = None
@@ -69,6 +145,9 @@ class PlanMemory:
 
 @dataclass(slots=True)
 class StructuredMemory:
+    source_index: SourceIndexMemory = field(default_factory=SourceIndexMemory)
+    route: RouteMemory = field(default_factory=RouteMemory)
+    finish: FinishMemory = field(default_factory=FinishMemory)
     schema: list[str] = field(default_factory=list)
     rules: list[str] = field(default_factory=list)
     entities: list[str] = field(default_factory=list)
@@ -79,7 +158,10 @@ class StructuredMemory:
 
     def has_content(self) -> bool:
         return bool(
-            self.schema
+            self.source_index.has_content()
+            or self.route.is_set()
+            or self.finish.is_set()
+            or self.schema
             or self.rules
             or self.entities
             or self.evidence
@@ -90,6 +172,9 @@ class StructuredMemory:
 
     def to_dict(self) -> dict[str, Any]:
         return {
+            "source_index": self.source_index.to_dict(),
+            "route": self.route.to_dict(),
+            "finish": self.finish.to_dict(),
             "schema": list(self.schema),
             "rules": list(self.rules),
             "entities": list(self.entities),

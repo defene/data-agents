@@ -330,7 +330,10 @@ def create_default_tool_registry() -> ToolRegistry:
     specs = {
         "answer": ToolSpec(
             name="answer",
-            description="Submit the final answer table. This is the only valid terminating action.",
+            description=(
+                "Submit the final answer table. Use this as soon as you have enough verified "
+                "evidence for the final output."
+            ),
             input_schema={
                 "columns": ["column_name"],
                 "rows": [["value_1"]],
@@ -363,7 +366,7 @@ def create_default_tool_registry() -> ToolRegistry:
         "record_memory": ToolSpec(
             name="record_memory",
             description=(
-                "Record a reusable fact into structured working memory. "
+                "Record only durable facts into structured working memory. "
                 "Use section='schema' for joins, columns, or files; 'rules' for definitions or thresholds; "
                 "'entities' for target IDs, names, or date windows; and 'evidence' for verified query results."
             ),
@@ -375,8 +378,8 @@ def create_default_tool_registry() -> ToolRegistry:
         "set_output_mapping": ToolSpec(
             name="set_output_mapping",
             description=(
-                "Map the question target to its source fields or derived expression before finalizing the answer shape. "
-                "Use this to declare what each output column represents and whether the result is detail rows or an aggregate."
+                "Optional helper for complex outputs. Map the question target to source fields or derived expressions "
+                "when you want to explicitly lock how final output columns should be interpreted."
             ),
             input_schema={
                 "mappings": [
@@ -398,7 +401,7 @@ def create_default_tool_registry() -> ToolRegistry:
         ),
         "list_context": ToolSpec(
             name="list_context",
-            description="List files and directories available under context.",
+            description="List files and directories available under context. Usually only needed once unless you are missing a file.",
             input_schema={"max_depth": 4},
         ),
         "list_doc_chunks": ToolSpec(
@@ -457,8 +460,8 @@ def create_default_tool_registry() -> ToolRegistry:
         "set_answer_shape": ToolSpec(
             name="set_answer_shape",
             description=(
-                "Define the expected final answer table before you submit. "
-                "Use this once your output mapping is clear and you know target columns, row count, sorting, or value-format constraints."
+                "Optional helper for complex outputs. Lock the expected final answer table when the output shape is not obvious "
+                "or when you want to prevent a last-step formatting mistake."
             ),
             input_schema={
                 "columns": ["name", "percentage"],
@@ -470,8 +473,8 @@ def create_default_tool_registry() -> ToolRegistry:
         "set_plan": ToolSpec(
             name="set_plan",
             description=(
-                "Track what is done and what remains. "
-                "Update this after major discoveries so you stop re-searching and move to the next concrete action."
+                "Optional progress checkpoint for longer tasks. "
+                "Use this only when it helps you stop looping and move to the next concrete action."
             ),
             input_schema={
                 "done": ["identified target entity"],

@@ -6,6 +6,12 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
+from data_agent_baseline.agents.controller import (
+    bootstrap_memory_from_context,
+    normalize_answer_submission,
+    update_finish_memory,
+    validate_answer_submission,
+)
 from data_agent_baseline.agents.model import ModelAdapter, ModelMessage, ModelStep
 from data_agent_baseline.agents.prompt import (
     REACT_SYSTEM_PROMPT,
@@ -27,6 +33,8 @@ from data_agent_baseline.tools.registry import ToolRegistry
 @dataclass(frozen=True, slots=True)
 class ReActAgentConfig:
     max_steps: int = 16
+    bootstrap_context_depth: int = 3
+    finish_step_buffer: int = 3
 
 
 def _strip_json_fence(raw_response: str) -> str:
@@ -41,16 +49,19 @@ def _strip_json_fence(raw_response: str) -> str:
 
 
 def _load_single_json_object(text: str) -> dict[str, Any]:
-    sanitized = re.sub(r"(?<!\\)\\'", "'", text)
-    payload, end = json.JSONDecoder().raw_decode(sanitized)
-    remainder = text[end:].strip()
-    if remainder:
-        cleaned_remainder = re.sub(r"(?:\\[nrt])+", "", remainder).strip()
-        if cleaned_remainder:
-            raise ValueError("Model response must contain only one JSON object.")
-    if not isinstance(payload, dict):
-        raise ValueError("Model response must be a JSON object.")
-    return payload
+    sanitized = re.sub(r"(?<!\\)\\'", "'", text).strip()
+    decoder = json.JSONDecoder()
+    search_from = sanitized.find("{")
+    while search_from != -1:
+        try:
+            payload, _end = decoder.raw_decode(sanitized[search_from:])
+        except json.JSONDecodeError:
+            search_from = sanitized.find("{", search_from + 1)
+            continue
+        if isinstance(payload, dict):
+            return payload
+        search_from = sanitized.find("{", search_from + 1)
+    raise ValueError("Model response must contain a JSON object.")
 
 
 def parse_model_step(raw_response: str) -> ModelStep:
@@ -76,7 +87,19 @@ def parse_model_step(raw_response: str) -> ModelStep:
 
 
 class ReActAgent:
-    _QUERY_ACTIONS = frozenset({"execute_python", "execute_context_sql"})
+    _FINISH_PRIORITY_ACTIONS = frozenset({"answer", "set_answer_shape", "set_output_mapping", "set_plan"})
+    _LOW_VALUE_EXPLORATION_ACTIONS = frozenset(
+        {
+            "inspect_sqlite_schema",
+            "list_context",
+            "list_doc_chunks",
+            "read_csv",
+            "read_doc",
+            "read_doc_chunk",
+            "read_json",
+            "search_doc",
+        }
+    )
 
     def __init__(
         self,
@@ -93,14 +116,20 @@ class ReActAgent:
         self.system_prompt = system_prompt or REACT_SYSTEM_PROMPT
         self.progress_callback = progress_callback
 
-    def _build_messages(self, task: PublicTask, state: AgentRuntimeState) -> list[ModelMessage]:
+    def _build_messages(
+        self,
+        task: PublicTask,
+        state: AgentRuntimeState,
+        *,
+        remaining_steps: int,
+    ) -> list[ModelMessage]:
         system_content = build_system_prompt(
             self.tools.describe_for_prompt(),
             system_prompt=self.system_prompt,
         )
         messages = [ModelMessage(role="system", content=system_content)]
 
-        task_content = build_task_prompt(task)
+        task_content = build_task_prompt(task) + f"\n\nRemaining step budget: {remaining_steps}"
         if state.memory.has_content():
             task_content += "\n\n" + build_memory_prompt(state.memory)
         messages.append(ModelMessage(role="user", content=task_content))
@@ -167,89 +196,91 @@ class ReActAgent:
             state.memory.plan.todo = list(plan_patch.get("todo", []))
             state.memory.plan.next_action = str(plan_patch.get("next_action", ""))
 
-    @staticmethod
-    def _outstanding_todo_items(state: AgentRuntimeState) -> list[str]:
-        allowed = {"submit answer", "call answer", "final answer", "answer"}
-        return [
-            item
-            for item in state.memory.plan.todo
-            if item.strip() and item.strip().lower() not in allowed
-        ]
+    def _bootstrap_state(self, task: PublicTask, state: AgentRuntimeState) -> None:
+        try:
+            tool_result = self.tools.execute(
+                task,
+                "list_context",
+                {"max_depth": self.config.bootstrap_context_depth},
+            )
+        except Exception:
+            return
 
-    @staticmethod
-    def _mapped_output_columns(state: AgentRuntimeState) -> list[str]:
-        columns: list[str] = []
-        for item in state.memory.output_mapping:
-            for column in item.output_columns:
-                if column not in columns:
-                    columns.append(column)
-        return columns
+        if tool_result.ok:
+            bootstrap_memory_from_context(
+                state,
+                question=task.question,
+                context_listing=tool_result.content,
+            )
+            update_finish_memory(state, remaining_steps=self.config.max_steps)
 
-    def _check_answer_guards(
+    def _should_block_low_value_exploration(
         self,
         state: AgentRuntimeState,
-        action_input: dict[str, Any],
-    ) -> str | None:
-        has_successful_query = any(
-            s.action in self._QUERY_ACTIONS and s.ok for s in state.steps
+        *,
+        action: str,
+        remaining_steps: int,
+    ) -> bool:
+        return (
+            state.memory.finish.ready_to_answer
+            and remaining_steps <= self.config.finish_step_buffer
+            and action in self._LOW_VALUE_EXPLORATION_ACTIONS
         )
-        if not has_successful_query:
-            return (
-                "REJECTED: You must execute at least one successful query "
-                "(execute_python or execute_context_sql) before submitting an answer. "
-                "Go back and query the data."
-            )
-        if not state.memory.answer_shape.columns:
-            return (
-                "REJECTED: You must define the answer shape via set_answer_shape before "
-                "submitting an answer. Record the final columns and row expectations first."
-            )
-        if not state.memory.output_mapping:
-            return (
-                "REJECTED: You must define an output mapping via set_output_mapping before "
-                "submitting an answer. Map each question target to source fields or expressions first."
-            )
-        mapped_columns = self._mapped_output_columns(state)
-        if mapped_columns != state.memory.answer_shape.columns:
-            return (
-                "REJECTED: set_output_mapping and set_answer_shape disagree about the final "
-                "output columns. Update them so they match exactly before answering."
-            )
-        submitted_columns = action_input.get("columns")
-        if submitted_columns != state.memory.answer_shape.columns:
-            return (
-                "REJECTED: answer.columns must exactly match the columns recorded via "
-                "set_answer_shape. Update the memory or fix the answer columns."
-            )
-        if not state.memory.evidence:
-            return (
-                "REJECTED: You must record at least one verified result in memory via "
-                "record_memory(section='evidence', ...) before submitting an answer."
-            )
-        if not state.memory.plan.is_set():
-            return (
-                "REJECTED: You must set a structured plan via set_plan before submitting "
-                "an answer. Summarize what is done and what remains."
-            )
-        outstanding_todo = self._outstanding_todo_items(state)
-        if outstanding_todo:
-            return (
-                "REJECTED: Your plan still has unfinished todo items: "
-                + "; ".join(outstanding_todo)
-                + ". Finish them or update the plan before answering."
-            )
-        return None
 
     def run(self, task: PublicTask) -> AgentRunResult:
         state = AgentRuntimeState()
+        self._bootstrap_state(task, state)
+
         for step_index in range(1, self.config.max_steps + 1):
-            messages = self._build_messages(task, state)
+            remaining_steps = self.config.max_steps - step_index + 1
+            update_finish_memory(state, remaining_steps=remaining_steps)
+            messages = self._build_messages(task, state, remaining_steps=remaining_steps)
             raw_response = self.model.complete(messages)
             try:
                 model_step = parse_model_step(raw_response)
 
+                if self._should_block_low_value_exploration(
+                    state,
+                    action=model_step.action,
+                    remaining_steps=remaining_steps,
+                ) and model_step.action not in self._FINISH_PRIORITY_ACTIONS:
+                    observation = {
+                        "ok": False,
+                        "error": (
+                            "Controller: enough verified evidence is already available. "
+                            "Stop exploring and move directly toward the final answer."
+                        ),
+                    }
+                    state.steps.append(
+                        StepRecord(
+                            step_index=step_index,
+                            thought=model_step.thought,
+                            action=model_step.action,
+                            action_input=model_step.action_input,
+                            raw_response=raw_response,
+                            observation=observation,
+                            ok=False,
+                            memory_snapshot=state.memory.to_dict(),
+                        )
+                    )
+                    if self.progress_callback is not None:
+                        self.progress_callback(state)
+                    continue
+
                 if model_step.action == "answer":
-                    guard_error = self._check_answer_guards(state, model_step.action_input)
+                    normalized_action_input = normalize_answer_submission(
+                        task,
+                        state,
+                        model_step.action_input,
+                    )
+                    update_finish_memory(state, remaining_steps=remaining_steps)
+                    guard_error = validate_answer_submission(state, normalized_action_input)
+                    model_step = ModelStep(
+                        thought=model_step.thought,
+                        action=model_step.action,
+                        action_input=normalized_action_input,
+                        raw_response=raw_response,
+                    )
                     if guard_error is not None:
                         observation = {"ok": False, "error": guard_error}
                         state.steps.append(
@@ -271,6 +302,10 @@ class ReActAgent:
                 tool_result = self.tools.execute(task, model_step.action, model_step.action_input)
                 if tool_result.ok:
                     self._apply_memory_patch(state, tool_result.memory_patch)
+                update_finish_memory(
+                    state,
+                    remaining_steps=self.config.max_steps - step_index,
+                )
 
                 observation = {
                     "ok": tool_result.ok,
@@ -311,6 +346,10 @@ class ReActAgent:
                         ok=False,
                         memory_snapshot=state.memory.to_dict(),
                     )
+                )
+                update_finish_memory(
+                    state,
+                    remaining_steps=self.config.max_steps - step_index,
                 )
                 if self.progress_callback is not None:
                     self.progress_callback(state)

@@ -7,97 +7,51 @@ from data_agent_baseline.benchmark.schema import PublicTask
 
 
 REACT_SYSTEM_PROMPT = """\
-You are a data analysis agent that solves tasks by iteratively using tools.
+You are a data analysis agent.
 
-You MUST follow this workflow strictly:
+Work in the shortest verifiable path to the answer.
 
-## Phase 1: Explore file structure
-- Call `list_context` to see all available files and directories.
-- Record important files, tables, or join paths with `record_memory(section="schema", ...)`.
+Core operating rules:
+- Take exactly ONE tool action per response.
+- Return exactly one JSON object with keys: `thought`, `action`, `action_input`.
+- Do NOT wrap the JSON in markdown fences or extra commentary.
+- Do NOT outline multiple future actions in one response.
+- Prefer direct lookup, join, or aggregation over broad exploration.
+- Use documentation only when it resolves an ID, definition, label, or value that structured data alone cannot answer.
+- Reuse the route hint, source index, and finish guidance in memory before deciding your next action.
+- Once you have enough verified evidence, stop exploring and answer.
 
-## Phase 2: Inspect schema
-- For SQLite/DB files: call `inspect_sqlite_schema` to get table and column definitions.
-- For CSV files: call `read_csv` (with a small max_rows) to see column names, types, and sample values.
-- For JSON files: call `read_json` to understand the structure.
-- Record: table/file names, column names, data types, join keys, and important patterns via `record_memory(section="schema", ...)`.
+Data integrity rules:
+- NEVER fabricate data. Every answer value must come from tool observations.
+- Preserve the original value formatting unless the question explicitly asks you to transform it.
+- If a document search is no longer adding new information, switch back to execute_python or execute_context_sql.
 
-## Phase 3: Read domain knowledge
-- If `knowledge.md` (or similar documentation) exists:
-  - For short documents, call `read_doc`.
-  - For long documents, first call `list_doc_chunks` or `search_doc`, then call `read_doc_chunk` on the most relevant chunks.
-- Record: field definitions, encoding rules, business constraints, table relationships, and domain terminology via `record_memory(section="rules", ...)`.
-- As soon as you identify the target ID, name, date window, or entity, record it via `record_memory(section="entities", ...)`.
-- If no knowledge file exists, skip this phase.
-
-## Phase 3.5: Map question targets to output
-- Before finalizing the answer format, call `set_output_mapping`.
-- Each mapping should connect the question target to:
-  - the source fields or derived expression you will use,
-  - the final output column names,
-  - whether the answer is detail rows or an aggregate,
-  - any important formatting rule.
-
-## Phase 4: Query
-- Write precise queries using `execute_python` (pandas) or `execute_context_sql` (SQLite).
-- Base your query logic on your structured memory.
-- For Python: always use pandas for CSV/JSON, always `print()` the result.
-- Python code runs inside an isolated scratch directory, not inside the task context directory.
-- In Python, read original files via `Path(context_root) / "<relative_path>"`.
-- If you need temporary outputs, write them only under `Path(scratch_root)`.
-- For SQL: write exact queries against SQLite/DB files.
-- After getting results, call `record_memory(section="evidence", ...)` to record verified findings.
-- Update `set_plan` after each major discovery so your todo list stays current.
-- Once your output mapping is clear, call `set_answer_shape`.
-
-## Phase 5: Verify and Answer
-- Sanity-check your results before submitting:
-  - Does the row count match what the question asks for?
-  - Do the values match the original format in the data source? Do NOT recalculate, convert, or reformat values.
-  - If something looks wrong, re-query or revisit your structured memory.
-- Make sure `set_output_mapping`, `set_answer_shape`, and the final `answer` all describe the same output columns.
-- Before answering, `set_plan` should show no unfinished work except possibly "submit answer".
-- Call the `answer` tool with `columns` (list of strings) and `rows` (list of lists).
-
-## Rules
-1. Return exactly one JSON object with keys: `thought`, `action`, `action_input`.
-2. Do NOT wrap the JSON in markdown fences or any other text.
-3. NEVER fabricate data. Every value in your answer MUST come from tool observations.
-4. Answer values must exactly match the original format in the data source.
-5. You MUST call `set_output_mapping` before submitting an answer, or it will be rejected.
-6. You MUST execute at least one query (execute_python or execute_context_sql) before submitting an answer, or it will be rejected.
-7. You MUST record at least one verified result with `record_memory(section="evidence", ...)` before submitting an answer.
-8. You MUST call `set_answer_shape` before submitting an answer, or it will be rejected.
-9. You MUST call `set_plan` before submitting an answer, and the remaining todo items must be empty except for "submit answer".
-10. Do not keep searching the same document once you already have the rule, threshold, or entity you need. Switch to SQL or Python and finish the computation.\
+Answering rules:
+- The `answer` tool is the only terminating action.
+- You MUST execute at least one successful query (`execute_python` or `execute_context_sql`) before answering.
+- You MUST record at least one verified finding with `record_memory(section="evidence", ...)` before answering.
+- `set_output_mapping`, `set_answer_shape`, and `set_plan` are optional helpers for complex tasks. Use them when they help you finish faster or clarify a multi-column answer.
+- If the finish guidance says you already have enough evidence, prioritize answering instead of more exploration.\
 """
 
 RESPONSE_EXAMPLES = """\
-Example: inspect context files
-{"thought": "I should list the available files first.", "action": "list_context", "action_input": {"max_depth": 4}}
+Example: direct lookup from a CSV
+{"thought": "The primary source is a CSV, so I should directly inspect its columns and sample values first.", "action": "read_csv", "action_input": {"path": "csv/data.csv", "max_rows": 20}}
 
-Example: record schema memory
-{"thought": "I found the main join path, so I should store it for later queries.", "action": "record_memory", "action_input": {"section": "schema", "fact": "orders.customer_id joins customers.id"}}
+Example: record a durable fact
+{"thought": "I found the join path I will reuse, so I should store it as schema memory.", "action": "record_memory", "action_input": {"section": "schema", "fact": "orders.customer_id joins customers.id"}}
 
-Example: record an entity
-{"thought": "The document identified the target entity, so I should store it and stop re-searching for it.", "action": "record_memory", "action_input": {"section": "entities", "fact": "target race_id=18"}}
+Example: resolve an ID through a document
+{"thought": "I already have the event id, so I should search the document for that exact identifier instead of reading broadly.", "action": "search_doc", "action_input": {"path": "doc/reference.md", "query": "rec12345", "top_k": 3}}
 
-Example: search a long document
-{"thought": "This reference document is long, so I should search for the section that defines the target field before reading chunks.", "action": "search_doc", "action_input": {"path": "doc/reference.md", "query": "field definition status rule", "top_k": 3}}
+Example: run the core computation
+{"thought": "I have enough schema context, so I should run one precise Python query to compute the final value.", "action": "execute_python", "action_input": {"code": "import pandas as pd\\ndf = pd.read_csv(context_root / 'csv/data.csv')\\nprint(df.groupby('category')['amount'].sum())"}}
 
-Example: read one document chunk
-{"thought": "This chunk looks relevant because it mentions the definition I need.", "action": "read_doc_chunk", "action_input": {"path": "doc/reference.md", "chunk_id": "chunk_0003"}}
+Example: optional answer shape for a complex output
+{"thought": "The answer has two final columns, so locking the shape will help me finish cleanly.", "action": "set_answer_shape", "action_input": {"columns": ["name", "amount"], "expected_rows": 1, "sort_requirement": "single summary row", "value_format_rules": ["preserve source formatting"]}}
 
-Example: set output mapping
-{"thought": "I know what the question is asking for and which source field it should come from, so I should map the target to the final output columns before locking the answer shape.", "action": "set_output_mapping", "action_input": {"mappings": [{"question_target": "driver surname", "source_kind": "raw_column", "source_refs": ["results.surname"], "output_columns": ["surname"], "granularity": "detail_rows", "format_rule": "preserve source formatting"}]}}
-
-Example: set answer shape
-{"thought": "The question asks for one row with two columns, so I should lock in the final answer format now.", "action": "set_answer_shape", "action_input": {"columns": ["name", "percentage"], "expected_rows": 1, "sort_requirement": "single summary row", "value_format_rules": ["preserve source formatting"]}}
-
-Example: set plan
-{"thought": "I know what is done and what remains, so I should update the plan before running the final query.", "action": "set_plan", "action_input": {"done": ["identified target entity"], "todo": ["run final aggregation", "submit answer"], "next_action": "query the results table for the final metric"}}
-
-Example: submit final answer
-{"thought": "The final query result matches my evidence and the answer shape, so I can submit the answer.", "action": "answer", "action_input": {"columns": ["name"], "rows": [["Alice"], ["Bob"]]}}\
+Example: submit the final answer once evidence is ready
+{"thought": "I already have verified evidence for the final table, so I should answer now instead of taking another exploratory step.", "action": "answer", "action_input": {"columns": ["count"], "rows": [["1"]]}}\
 """
 
 
@@ -110,14 +64,12 @@ def build_task_prompt(task: PublicTask) -> str:
     return (
         f"Question: {task.question}\n\n"
         "All tool file paths are relative to the task context directory. "
-        "For long documents, prefer `list_doc_chunks` or `search_doc` plus `read_doc_chunk` instead of relying only on `read_doc`. "
+        "Work one step at a time and choose the single highest-value next action. "
+        "For long documents, prefer `search_doc` or `list_doc_chunks` plus `read_doc_chunk` over broad reading. "
         "For `execute_python`, you are given `context_root` and `scratch_root` as Path objects; "
         "read source files from `context_root` and write temporary files only to `scratch_root`. "
-        "Use `record_memory` to store schema, rules, entities, and evidence. "
-        "Use `set_output_mapping` to connect question targets to source fields or derived expressions before finalizing output columns. "
-        "Use `set_answer_shape` once you know the target output format. "
-        "Use `set_plan` to keep only the remaining work visible. "
-        "When you have the final table, call the `answer` tool."
+        "Use `record_memory` only for durable findings you will reuse, especially verified evidence. "
+        "When you already have enough evidence for the final table, call the `answer` tool instead of exploring further."
     )
 
 
@@ -131,6 +83,32 @@ def _render_list_section(title: str, items: list[str]) -> str:
 def build_memory_prompt(memory: StructuredMemory) -> str:
     sections: list[str] = []
 
+    if memory.route.is_set():
+        sections.append(
+            "Route Hint:\n"
+            f"- task_type: {memory.route.task_type or '(unknown)'}\n"
+            f"- solver_mode: {memory.route.solver_mode or '(unknown)'}\n"
+            f"- output_hint: {memory.route.output_hint or '(unspecified)'}\n"
+            f"- primary_sources: {memory.route.primary_sources}\n"
+            f"- supporting_sources: {memory.route.supporting_sources}\n"
+            f"- rationale: {memory.route.rationale or '(none)'}"
+        )
+    if memory.source_index.has_content():
+        sections.append(
+            "Source Index:\n"
+            f"- tabular_files: {memory.source_index.tabular_files}\n"
+            f"- db_files: {memory.source_index.db_files}\n"
+            f"- doc_files: {memory.source_index.doc_files}\n"
+            f"- other_files: {memory.source_index.other_files}"
+        )
+    if memory.finish.is_set():
+        sections.append(
+            "Finish Controller:\n"
+            f"- ready_to_answer: {memory.finish.ready_to_answer}\n"
+            f"- missing_requirements: {memory.finish.missing_requirements}\n"
+            f"- guidance: {memory.finish.guidance or '(none)'}\n"
+            f"- remaining_steps: {memory.finish.remaining_steps}"
+        )
     if memory.answer_shape.is_set():
         sections.append(
             "Answer Shape:\n"
