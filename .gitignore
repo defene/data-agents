@@ -27,6 +27,10 @@ docs/
 tests/
 evaluation/
 artifacts/
+!docs/
+docs/*
+!docs/AGENT_EXPERIMENT_PROTOCOL.md
+!docs/AGENT_EXPERIMENT_TEMPLATE.md
 
 # Local configs
 configs/*
