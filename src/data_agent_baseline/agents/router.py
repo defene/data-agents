@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import re
-
 from data_agent_baseline.agents.runtime import RouteMemory, SourceIndexMemory
 
 DB_SUFFIXES = (".db", ".duckdb", ".sqlite")
@@ -22,13 +20,13 @@ def _unique_preserve_order(items: list[str]) -> list[str]:
 
 def _priority_key(path: str) -> tuple[int, str]:
     lowered = path.lower()
-    if lowered.endswith((".db", ".sqlite", ".duckdb")):
-        return (0, lowered)
-    if lowered.endswith((".csv", ".tsv", ".json", ".parquet", ".xls", ".xlsx")):
-        return (1, lowered)
-    if lowered.startswith("doc/"):
-        return (2, lowered)
     if lowered == "knowledge.md":
+        return (0, lowered)
+    if lowered.endswith((".db", ".sqlite", ".duckdb")):
+        return (1, lowered)
+    if lowered.endswith((".csv", ".tsv", ".json", ".parquet", ".xls", ".xlsx")):
+        return (2, lowered)
+    if lowered.startswith("doc/"):
         return (3, lowered)
     return (4, lowered)
 
@@ -70,85 +68,42 @@ def build_source_index(context_listing: dict[str, object]) -> SourceIndexMemory:
     )
 
 
-def _normalize_question(question: str) -> str:
-    return re.sub(r"\s+", " ", question.strip().lower())
-
-
-def _contains_any(text: str, terms: tuple[str, ...]) -> bool:
-    return any(term in text for term in terms)
-
-
 def _infer_task_type(question: str) -> str:
-    lowered = _normalize_question(question)
-    ratio_percentage_terms = (
-        "percentage",
-        "percent",
-        "ratio",
-        "proportion",
-        "share",
-        "fraction",
-        "how many times",
-        "times was",
-        "times were",
-        "times is",
-        "times are",
+    lowered = question.lower()
+    compare_terms = (" more than ", " less than ", " higher than ", " greater than ", " compared to ")
+    aggregate_terms = (
+        "how many",
+        "number of",
+        "count",
+        "total",
+        "sum",
+        "average",
+        "avg",
+        "minimum",
+        "maximum",
+        "max",
+        "min",
     )
-    average_terms = ("average", "avg", "mean")
-    count_distinct_terms = ("distinct", "unique", "different ")
-    count_terms = ("how many", "number of", "count")
-    aggregate_terms = ("total", "sum", "minimum", "maximum", "max", "min")
-    compare_terms = (
-        " more than ",
-        " less than ",
-        " higher than ",
-        " greater than ",
-        " compared to ",
-        " lower than ",
-    )
-    table_terms = ("list ", "show ", "which ", "what are ", "give all ", "provide all ", "return all ")
+    table_terms = ("list ", "show ", "which ", "what are ", "give all ", "provide all ")
 
-    if _contains_any(lowered, ratio_percentage_terms):
-        return "ratio_percentage"
-    if _contains_any(lowered, average_terms):
-        return "average"
-    if _contains_any(lowered, count_distinct_terms):
-        return "count_distinct"
-    if _contains_any(lowered, count_terms):
-        return "count"
-    if _contains_any(lowered, aggregate_terms):
+    if any(term in lowered for term in compare_terms):
+        return "compare"
+    if any(term in lowered for term in aggregate_terms):
         return "aggregate"
-    if _contains_any(lowered, compare_terms):
-        return "entity_compare"
-    if _contains_any(lowered, table_terms):
-        return "multi_row_extract"
+    if any(term in lowered for term in table_terms):
+        return "table"
     return "lookup"
 
 
-def _contextual_doc_files(source_index: SourceIndexMemory) -> list[str]:
-    return [path for path in source_index.doc_files if path.lower() != "knowledge.md"]
+def _infer_solver_mode(source_index: SourceIndexMemory) -> str:
+    has_structured = bool(source_index.tabular_files or source_index.db_files)
+    has_docs = bool(source_index.doc_files)
 
-
-def _knowledge_doc_files(source_index: SourceIndexMemory) -> list[str]:
-    return [path for path in source_index.doc_files if path.lower() == "knowledge.md"]
-
-
-def _infer_solver_mode(source_index: SourceIndexMemory, task_type: str) -> str:
-    contextual_docs = _contextual_doc_files(source_index)
-    has_contextual_docs = bool(contextual_docs)
-    has_db = bool(source_index.db_files)
-    has_tabular = bool(source_index.tabular_files)
-    doc_link_task_types = {"lookup", "multi_row_extract", "entity_compare"}
-
-    if has_db:
-        if has_contextual_docs and task_type in doc_link_task_types:
-            return "doc_link"
+    if has_structured and has_docs:
+        return "doc_link"
+    if source_index.db_files:
         return "sql_first"
-    if has_tabular:
-        if has_contextual_docs and (
-            task_type in doc_link_task_types
-            or (task_type == "ratio_percentage" and len(source_index.tabular_files) <= 1)
-        ):
-            return "doc_link"
+    if source_index.tabular_files:
         return "tabular_first"
     if source_index.doc_files:
         return "doc_first"
@@ -156,74 +111,33 @@ def _infer_solver_mode(source_index: SourceIndexMemory, task_type: str) -> str:
 
 
 def _infer_output_hint(question: str, task_type: str) -> str:
-    lowered = _normalize_question(question)
-    if task_type == "multi_row_extract":
+    lowered = question.lower()
+    if task_type == "table":
         return "multi_row_table"
-    if task_type in {
-        "count",
-        "average",
-        "aggregate",
-        "ratio_percentage",
-        "count_distinct",
-        "entity_compare",
-    }:
+    if task_type in {"aggregate", "compare"}:
         return "single_value_or_single_row"
-    if " and " in lowered or "," in lowered or " include " in lowered:
+    if " and " in lowered or "," in lowered:
         return "single_row_with_multiple_columns"
     return "single_row_lookup"
 
 
-def _pick_primary_sources(source_index: SourceIndexMemory, solver_mode: str, task_type: str) -> list[str]:
-    contextual_docs = _contextual_doc_files(source_index)
-    knowledge_docs = _knowledge_doc_files(source_index)
+def _pick_primary_sources(source_index: SourceIndexMemory, solver_mode: str) -> list[str]:
     ordered_sources: list[str] = []
-
-    if solver_mode == "sql_first":
+    if solver_mode in {"sql_first", "doc_link"}:
         ordered_sources.extend(source_index.db_files)
+    if solver_mode in {"tabular_first", "doc_link", "sql_first"}:
         ordered_sources.extend(source_index.tabular_files)
-        ordered_sources.extend(contextual_docs)
-        ordered_sources.extend(knowledge_docs)
-    elif solver_mode == "tabular_first":
-        ordered_sources.extend(source_index.tabular_files)
-        ordered_sources.extend(source_index.db_files)
-        ordered_sources.extend(contextual_docs)
-        ordered_sources.extend(knowledge_docs)
-    elif solver_mode == "doc_link":
-        if task_type == "ratio_percentage" and contextual_docs and not source_index.db_files:
-            ordered_sources.extend(contextual_docs)
-            ordered_sources.extend(source_index.db_files)
-            ordered_sources.extend(source_index.tabular_files)
-        else:
-            ordered_sources.extend(source_index.db_files)
-            ordered_sources.extend(source_index.tabular_files)
-            ordered_sources.extend(contextual_docs)
-        ordered_sources.extend(knowledge_docs)
-    elif solver_mode == "doc_first":
-        ordered_sources.extend(contextual_docs)
-        ordered_sources.extend(knowledge_docs)
-        ordered_sources.extend(source_index.db_files)
-        ordered_sources.extend(source_index.tabular_files)
-    else:
-        ordered_sources.extend(source_index.db_files)
-        ordered_sources.extend(source_index.tabular_files)
-        ordered_sources.extend(contextual_docs)
-        ordered_sources.extend(knowledge_docs)
-
+    ordered_sources.extend(source_index.doc_files)
     ordered_sources.extend(source_index.other_files)
-    return _unique_preserve_order(ordered_sources)[:3]
+    return sorted(_unique_preserve_order(ordered_sources), key=_priority_key)[:3]
 
 
 def _build_route_rationale(task_type: str, solver_mode: str) -> str:
     if solver_mode == "doc_link":
-        if task_type == "entity_compare":
+        if task_type == "compare":
             return (
                 "Resolve the compared entities in structured data first, then use the linked "
                 "document references only to extract the final comparable values."
-            )
-        if task_type == "ratio_percentage":
-            return (
-                "Use the main entity source to form the filtered set, then use the linked "
-                "mapping or document evidence needed to compute the numerator, denominator, and final ratio."
             )
         if task_type == "lookup":
             return (
@@ -245,8 +159,8 @@ def _build_route_rationale(task_type: str, solver_mode: str) -> str:
 
 def infer_task_route(question: str, source_index: SourceIndexMemory) -> RouteMemory:
     task_type = _infer_task_type(question)
-    solver_mode = _infer_solver_mode(source_index, task_type)
-    primary_sources = _pick_primary_sources(source_index, solver_mode, task_type)
+    solver_mode = _infer_solver_mode(source_index)
+    primary_sources = _pick_primary_sources(source_index, solver_mode)
     supporting_sources = [
         path
         for path in (
