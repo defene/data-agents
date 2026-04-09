@@ -10,6 +10,11 @@ from data_agent_baseline.agents.model import (
     ModelStep,
     OpenAIModelAdapter,
 )
+from data_agent_baseline.agents.policies.finish import (
+    DEFAULT_FINISH_POLICY,
+    DefaultFinishPolicy,
+    FinishPolicy,
+)
 from data_agent_baseline.agents.prompt import (
     REACT_SYSTEM_PROMPT,
     build_observation_prompt,
@@ -31,7 +36,10 @@ from data_agent_baseline.agents.runtime import (
 __all__ = [
     "AgentRunResult",
     "AgentRuntimeState",
+    "DEFAULT_FINISH_POLICY",
+    "DefaultFinishPolicy",
     "FinishMemory",
+    "FinishPolicy",
     "ModelAdapter",
     "ModelMessage",
     "ModelStep",

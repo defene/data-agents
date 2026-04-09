@@ -13,6 +13,7 @@ from data_agent_baseline.agents.controller import (
     validate_answer_submission,
 )
 from data_agent_baseline.agents.model import ModelAdapter, ModelMessage, ModelStep
+from data_agent_baseline.agents.policies.finish import DEFAULT_FINISH_POLICY, FinishPolicy
 from data_agent_baseline.agents.prompt import (
     REACT_SYSTEM_PROMPT,
     build_memory_prompt,
@@ -108,12 +109,14 @@ class ReActAgent:
         tools: ToolRegistry,
         config: ReActAgentConfig | None = None,
         system_prompt: str | None = None,
+        finish_policy: FinishPolicy | None = None,
         progress_callback: Callable[[AgentRuntimeState], None] | None = None,
     ) -> None:
         self.model = model
         self.tools = tools
         self.config = config or ReActAgentConfig()
         self.system_prompt = system_prompt or REACT_SYSTEM_PROMPT
+        self.finish_policy = finish_policy or DEFAULT_FINISH_POLICY
         self.progress_callback = progress_callback
 
     def _build_messages(
@@ -212,7 +215,12 @@ class ReActAgent:
                 question=task.question,
                 context_listing=tool_result.content,
             )
-            update_finish_memory(state, question=task.question, remaining_steps=self.config.max_steps)
+            update_finish_memory(
+                state,
+                question=task.question,
+                remaining_steps=self.config.max_steps,
+                finish_policy=self.finish_policy,
+            )
 
     def _should_block_low_value_exploration(
         self,
@@ -233,7 +241,12 @@ class ReActAgent:
 
         for step_index in range(1, self.config.max_steps + 1):
             remaining_steps = self.config.max_steps - step_index + 1
-            update_finish_memory(state, question=task.question, remaining_steps=remaining_steps)
+            update_finish_memory(
+                state,
+                question=task.question,
+                remaining_steps=remaining_steps,
+                finish_policy=self.finish_policy,
+            )
             messages = self._build_messages(task, state, remaining_steps=remaining_steps)
             raw_response = self.model.complete(messages)
             try:
@@ -273,7 +286,12 @@ class ReActAgent:
                         state,
                         model_step.action_input,
                     )
-                    update_finish_memory(state, question=task.question, remaining_steps=remaining_steps)
+                    update_finish_memory(
+                        state,
+                        question=task.question,
+                        remaining_steps=remaining_steps,
+                        finish_policy=self.finish_policy,
+                    )
                     guard_error = validate_answer_submission(task, state, normalized_action_input)
                     model_step = ModelStep(
                         thought=model_step.thought,
@@ -306,6 +324,7 @@ class ReActAgent:
                     state,
                     question=task.question,
                     remaining_steps=self.config.max_steps - step_index,
+                    finish_policy=self.finish_policy,
                 )
 
                 observation = {
@@ -352,6 +371,7 @@ class ReActAgent:
                     state,
                     question=task.question,
                     remaining_steps=self.config.max_steps - step_index,
+                    finish_policy=self.finish_policy,
                 )
                 if self.progress_callback is not None:
                     self.progress_callback(state)
