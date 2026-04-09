@@ -72,18 +72,9 @@ def _has_nan_like_text(text: str) -> bool:
 
 def _has_zero_result_text(text: str) -> bool:
     markers = (
-        "0 rows",
         "no rows",
-        "no row",
         "no match",
         "no matches",
-        "no record",
-        "no records",
-        "not found",
-        "none found",
-        "none labeled",
-        "no exact",
-        "returned 0 rows",
         "empty",
         "[]",
         "count=0",
@@ -95,9 +86,6 @@ def _has_zero_result_text(text: str) -> bool:
 
 
 class DefaultFinishPolicy:
-    def _requires_concrete_answer(self, state: AgentRuntimeState) -> bool:
-        return state.memory.route.task_type in {"lookup", "table"}
-
     def _route_guidance(self, state: AgentRuntimeState) -> str:
         route = state.memory.route
         if route.solver_mode == "doc_link":
@@ -142,14 +130,6 @@ class DefaultFinishPolicy:
             missing_requirements.append("an aligned answer contract")
         if has_evidence and _is_average_question(question) and _has_nan_like_text(evidence_text):
             missing_requirements.append("a resolved numeric value instead of NaN/None")
-        if (
-            has_evidence
-            and self._requires_concrete_answer(state)
-            and _has_zero_result_text(evidence_text)
-        ):
-            missing_requirements.append(
-                "a concrete result value or row instead of a negative/inconclusive evidence summary"
-            )
         if has_evidence and _is_row_extraction_question(question) and _has_zero_result_text(
             evidence_text
         ):
@@ -168,15 +148,6 @@ class DefaultFinishPolicy:
             guidance = (
                 "The current result is NaN-like. Resolve the mapping or computation to a concrete "
                 "numeric value before answering."
-            )
-        elif (
-            has_evidence
-            and self._requires_concrete_answer(state)
-            and _has_zero_result_text(evidence_text)
-        ):
-            guidance = (
-                "The current evidence is negative or inconclusive. Do not answer with 'not found' or "
-                "similar text. Run another query to extract the concrete final value or result rows."
             )
         elif has_evidence and _is_row_extraction_question(question) and _has_zero_result_text(
             evidence_text
