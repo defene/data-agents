@@ -83,6 +83,39 @@ class FinishMemory:
 
 
 @dataclass(slots=True)
+class CandidateResultMemory:
+    ready: bool = False
+    kind: str = ""
+    source: str = ""
+    columns: list[str] = field(default_factory=list)
+    row_count: int | None = None
+    value_count: int | None = None
+    summary: str = ""
+
+    def is_set(self) -> bool:
+        return bool(
+            self.ready
+            or self.kind
+            or self.source
+            or self.columns
+            or self.row_count is not None
+            or self.value_count is not None
+            or self.summary
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "ready": self.ready,
+            "kind": self.kind,
+            "source": self.source,
+            "columns": list(self.columns),
+            "row_count": self.row_count,
+            "value_count": self.value_count,
+            "summary": self.summary,
+        }
+
+
+@dataclass(slots=True)
 class AnswerShapeMemory:
     columns: list[str] = field(default_factory=list)
     expected_rows: int | None = None
@@ -148,6 +181,7 @@ class StructuredMemory:
     source_index: SourceIndexMemory = field(default_factory=SourceIndexMemory)
     route: RouteMemory = field(default_factory=RouteMemory)
     finish: FinishMemory = field(default_factory=FinishMemory)
+    candidate_result: CandidateResultMemory = field(default_factory=CandidateResultMemory)
     schema: list[str] = field(default_factory=list)
     rules: list[str] = field(default_factory=list)
     entities: list[str] = field(default_factory=list)
@@ -161,6 +195,7 @@ class StructuredMemory:
             self.source_index.has_content()
             or self.route.is_set()
             or self.finish.is_set()
+            or self.candidate_result.is_set()
             or self.schema
             or self.rules
             or self.entities
@@ -175,6 +210,7 @@ class StructuredMemory:
             "source_index": self.source_index.to_dict(),
             "route": self.route.to_dict(),
             "finish": self.finish.to_dict(),
+            "candidate_result": self.candidate_result.to_dict(),
             "schema": list(self.schema),
             "rules": list(self.rules),
             "entities": list(self.entities),

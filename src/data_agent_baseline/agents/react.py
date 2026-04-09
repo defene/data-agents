@@ -15,6 +15,7 @@ from data_agent_baseline.agents.controller import (
 from data_agent_baseline.agents.model import ModelAdapter, ModelMessage, ModelStep
 from data_agent_baseline.agents.policies.answer import DEFAULT_ANSWER_POLICY, AnswerPolicy
 from data_agent_baseline.agents.policies.finish import DEFAULT_FINISH_POLICY, FinishPolicy
+from data_agent_baseline.agents.policies.recipe import DEFAULT_RECIPE_POLICY, RecipePolicy
 from data_agent_baseline.agents.prompt import (
     REACT_SYSTEM_PROMPT,
     build_memory_prompt,
@@ -112,6 +113,7 @@ class ReActAgent:
         system_prompt: str | None = None,
         answer_policy: AnswerPolicy | None = None,
         finish_policy: FinishPolicy | None = None,
+        recipe_policy: RecipePolicy | None = None,
         progress_callback: Callable[[AgentRuntimeState], None] | None = None,
     ) -> None:
         self.model = model
@@ -120,6 +122,7 @@ class ReActAgent:
         self.system_prompt = system_prompt or REACT_SYSTEM_PROMPT
         self.answer_policy = answer_policy or DEFAULT_ANSWER_POLICY
         self.finish_policy = finish_policy or DEFAULT_FINISH_POLICY
+        self.recipe_policy = recipe_policy or DEFAULT_RECIPE_POLICY
         self.progress_callback = progress_callback
 
     def _build_messages(
@@ -284,6 +287,29 @@ class ReActAgent:
                     continue
 
                 if model_step.action == "answer":
+                    recipe_guard_error = self.recipe_policy.validate_answer_attempt(
+                        task,
+                        state,
+                        model_step.action_input,
+                    )
+                    if recipe_guard_error is not None:
+                        observation = {"ok": False, "error": recipe_guard_error}
+                        state.steps.append(
+                            StepRecord(
+                                step_index=step_index,
+                                thought=model_step.thought,
+                                action=model_step.action,
+                                action_input=model_step.action_input,
+                                raw_response=raw_response,
+                                observation=observation,
+                                ok=False,
+                                memory_snapshot=state.memory.to_dict(),
+                            )
+                        )
+                        if self.progress_callback is not None:
+                            self.progress_callback(state)
+                        continue
+
                     normalized_action_input = normalize_answer_submission(
                         task,
                         state,
@@ -329,6 +355,13 @@ class ReActAgent:
                 tool_result = self.tools.execute(task, model_step.action, model_step.action_input)
                 if tool_result.ok:
                     self._apply_memory_patch(state, tool_result.memory_patch)
+                    self.recipe_policy.observe_tool_result(
+                        task,
+                        state,
+                        action=model_step.action,
+                        action_input=model_step.action_input,
+                        tool_content=tool_result.content,
+                    )
                 update_finish_memory(
                     state,
                     question=task.question,

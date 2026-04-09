@@ -109,6 +109,17 @@ def build_memory_prompt(memory: StructuredMemory) -> str:
             f"- guidance: {memory.finish.guidance or '(none)'}\n"
             f"- remaining_steps: {memory.finish.remaining_steps}"
         )
+    if memory.candidate_result.is_set():
+        sections.append(
+            "Candidate Result:\n"
+            f"- ready: {memory.candidate_result.ready}\n"
+            f"- kind: {memory.candidate_result.kind or '(none)'}\n"
+            f"- source: {memory.candidate_result.source or '(none)'}\n"
+            f"- columns: {memory.candidate_result.columns}\n"
+            f"- row_count: {memory.candidate_result.row_count}\n"
+            f"- value_count: {memory.candidate_result.value_count}\n"
+            f"- summary: {memory.candidate_result.summary or '(none)'}"
+        )
     if memory.answer_shape.is_set():
         sections.append(
             "Answer Shape:\n"
