@@ -31,6 +31,7 @@ artifacts/
 docs/*
 !docs/AGENT_EXPERIMENT_PROTOCOL.md
 !docs/AGENT_EXPERIMENT_TEMPLATE.md
+!docs/AGENT_POLICY_REFACTOR_PLAN.md
 
 # Local configs
 configs/*
