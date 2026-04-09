@@ -13,6 +13,7 @@ from data_agent_baseline.agents.controller import (
     validate_answer_submission,
 )
 from data_agent_baseline.agents.model import ModelAdapter, ModelMessage, ModelStep
+from data_agent_baseline.agents.policies.answer import DEFAULT_ANSWER_POLICY, AnswerPolicy
 from data_agent_baseline.agents.policies.finish import DEFAULT_FINISH_POLICY, FinishPolicy
 from data_agent_baseline.agents.prompt import (
     REACT_SYSTEM_PROMPT,
@@ -109,6 +110,7 @@ class ReActAgent:
         tools: ToolRegistry,
         config: ReActAgentConfig | None = None,
         system_prompt: str | None = None,
+        answer_policy: AnswerPolicy | None = None,
         finish_policy: FinishPolicy | None = None,
         progress_callback: Callable[[AgentRuntimeState], None] | None = None,
     ) -> None:
@@ -116,6 +118,7 @@ class ReActAgent:
         self.tools = tools
         self.config = config or ReActAgentConfig()
         self.system_prompt = system_prompt or REACT_SYSTEM_PROMPT
+        self.answer_policy = answer_policy or DEFAULT_ANSWER_POLICY
         self.finish_policy = finish_policy or DEFAULT_FINISH_POLICY
         self.progress_callback = progress_callback
 
@@ -285,6 +288,7 @@ class ReActAgent:
                         task,
                         state,
                         model_step.action_input,
+                        answer_policy=self.answer_policy,
                     )
                     update_finish_memory(
                         state,
@@ -292,7 +296,12 @@ class ReActAgent:
                         remaining_steps=remaining_steps,
                         finish_policy=self.finish_policy,
                     )
-                    guard_error = validate_answer_submission(task, state, normalized_action_input)
+                    guard_error = validate_answer_submission(
+                        task,
+                        state,
+                        normalized_action_input,
+                        answer_policy=self.answer_policy,
+                    )
                     model_step = ModelStep(
                         thought=model_step.thought,
                         action=model_step.action,
