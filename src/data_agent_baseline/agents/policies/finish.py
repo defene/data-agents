@@ -85,10 +85,6 @@ def _has_zero_result_text(text: str) -> bool:
     return any(marker in text for marker in markers)
 
 
-def _requires_candidate_result(state: AgentRuntimeState) -> bool:
-    return state.memory.route.output_hint in {"single_row_lookup", "multi_row_table"}
-
-
 class DefaultFinishPolicy:
     def _route_guidance(self, state: AgentRuntimeState) -> str:
         route = state.memory.route
@@ -130,8 +126,6 @@ class DefaultFinishPolicy:
             missing_requirements.append("one successful query")
         if not has_evidence:
             missing_requirements.append("at least one verified evidence fact")
-        if has_query and _requires_candidate_result(state) and not state.memory.candidate_result.ready:
-            missing_requirements.append("a concrete candidate value or row set from query results")
         if contract_misaligned:
             missing_requirements.append("an aligned answer contract")
         if has_evidence and _is_average_question(question) and _has_nan_like_text(evidence_text):
@@ -161,11 +155,6 @@ class DefaultFinishPolicy:
             guidance = (
                 "The current evidence suggests an empty result table. Re-check joins, mappings, or "
                 "filters before answering."
-            )
-        elif has_query and _requires_candidate_result(state) and not state.memory.candidate_result.ready:
-            guidance = (
-                "Before answering, materialize the concrete candidate value or result rows in a "
-                "successful query or scratch output. Do not stop at narrative evidence."
             )
         elif has_query and not has_evidence:
             guidance = "Record one concise evidence fact from verified results, then answer."
