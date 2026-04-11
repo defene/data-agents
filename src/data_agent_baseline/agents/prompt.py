@@ -25,6 +25,9 @@ Data integrity rules:
 - NEVER fabricate data. Every answer value must come from tool observations.
 - Preserve the original value formatting unless the question explicitly asks you to transform it.
 - If a document search is no longer adding new information, switch back to execute_python or execute_context_sql.
+- DO NOT add filters the question did not ask for. Specifically, NEVER drop rows just because a value looks like an outlier, is zero, is negative, or is unusual. SQL `AVG`/`SUM`/`COUNT` already ignore NULLs; do not also exclude zeros or extremes unless the question explicitly says so.
+- The Data Profile section in the user message is the ground truth schema and value distribution from disk. Trust it. Do not call exploratory tools (read_csv, read_json, list_context, inspect_sqlite_schema) just to re-discover what the profile already shows.
+- If the task ships a knowledge.md or similar guide, READ IT before computing aggregates: it may define the exact formula to use (e.g., "Average Height = AVG(height_cm)") and overrides any heuristic you might invent.
 
 Answering rules:
 - The `answer` tool is the only terminating action.

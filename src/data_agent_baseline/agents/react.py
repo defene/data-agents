@@ -15,6 +15,7 @@ from data_agent_baseline.agents.controller import (
 from data_agent_baseline.agents.model import ModelAdapter, ModelMessage, ModelStep
 from data_agent_baseline.agents.policies.answer import DEFAULT_ANSWER_POLICY, AnswerPolicy
 from data_agent_baseline.agents.policies.finish import DEFAULT_FINISH_POLICY, FinishPolicy
+from data_agent_baseline.agents.profiler import profile_context, render_profile_for_prompt
 from data_agent_baseline.agents.prompt import (
     REACT_SYSTEM_PROMPT,
     build_memory_prompt,
@@ -136,6 +137,8 @@ class ReActAgent:
         messages = [ModelMessage(role="system", content=system_content)]
 
         task_content = build_task_prompt(task) + f"\n\nRemaining step budget: {remaining_steps}"
+        if state.data_profile_text:
+            task_content += "\n\n" + state.data_profile_text
         if state.memory.has_content():
             task_content += "\n\n" + build_memory_prompt(state.memory)
         messages.append(ModelMessage(role="user", content=task_content))
@@ -203,6 +206,12 @@ class ReActAgent:
             state.memory.plan.next_action = str(plan_patch.get("next_action", ""))
 
     def _bootstrap_state(self, task: PublicTask, state: AgentRuntimeState) -> None:
+        try:
+            profile = profile_context(task)
+            state.data_profile_text = render_profile_for_prompt(profile)
+        except Exception:
+            state.data_profile_text = ""
+
         try:
             tool_result = self.tools.execute(
                 task,

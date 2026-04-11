@@ -224,6 +224,7 @@ class AgentRuntimeState:
     memory: StructuredMemory = field(default_factory=StructuredMemory)
     answer: AnswerTable | None = None
     failure_reason: str | None = None
+    data_profile_text: str = ""
 
 
 @dataclass(frozen=True, slots=True)
