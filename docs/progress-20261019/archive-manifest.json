@@ -191,6 +191,11 @@
       "sha256": "a3406327247c2a001ec39a2f39c31d281e1ae2aab84bf5e94f37eebc7026809b"
     },
     {
+      "path": "cleanup-receipt.json",
+      "bytes": 922,
+      "sha256": "65ac861103af025b562dc06c28cdfb7927da698369ad62f68c2998aac7aa4cae"
+    },
+    {
       "path": "data-manifest.json",
       "bytes": 62644,
       "sha256": "8498a18a5bd3fbe0a364c5f10da4e0917c8632a8d76861b943580ad8fa460e48"
@@ -202,8 +207,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 2375,
-      "sha256": "eeabbe9196f738d02c85555c68edb7cafaa967a0ccfe2c80b0d940a70b92e3f6"
+      "bytes": 2719,
+      "sha256": "43c3d9b68b0bd9d187d31e89664ab9462fbdc62601fd742ea3668b1ecc4707a7"
     },
     {
       "path": "run-summaries/20260331T053002Z.json",

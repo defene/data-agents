@@ -1,0 +1,27 @@
+{
+  "status": "completed",
+  "project_root": "C:\\Users\\rog\\Desktop\\kddcup2026-data-agents-starter-kit-master",
+  "scope": "data/",
+  "verified_remote_commit": "d3828a9ab9705bffb083d005236b8135ced003a3",
+  "remote_branch": "codex/agent-v2-overhaul",
+  "manifest_sha256": "8498a18a5bd3fbe0a364c5f10da4e0917c8632a8d76861b943580ad8fa460e48",
+  "authorized_file_count": 278,
+  "logical_bytes": 1881405569,
+  "deleted_file_count": 278,
+  "started_at_utc": "2026-10-19T06:39:17.1718596Z",
+  "preserved": [
+    "artifacts/",
+    "configs/",
+    "src/",
+    ".venv/",
+    "unrelated plotting files",
+    ".claude/"
+  ],
+  "raw_dataset_uploaded": false,
+  "completed_at_utc": "2026-10-19T06:39:20.2594996Z",
+  "data_directory_removed": true,
+  "artifacts_file_count_before": 6077,
+  "artifacts_file_count_after": 6077,
+  "artifacts_bytes_before": 339730649.0,
+  "artifacts_bytes_after": 339730649.0
+}
