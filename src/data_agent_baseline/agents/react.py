@@ -16,6 +16,7 @@ from data_agent_baseline.agents.model import ModelAdapter, ModelMessage, ModelSt
 from data_agent_baseline.agents.policies.answer import DEFAULT_ANSWER_POLICY, AnswerPolicy
 from data_agent_baseline.agents.policies.finish import DEFAULT_FINISH_POLICY, FinishPolicy
 from data_agent_baseline.agents.profiler import profile_context, render_profile_for_prompt
+from data_agent_baseline.agents.shape_hints import detect_shape_hints, render_shape_hints
 from data_agent_baseline.agents.prompt import (
     REACT_SYSTEM_PROMPT,
     build_memory_prompt,
@@ -139,6 +140,8 @@ class ReActAgent:
         task_content = build_task_prompt(task) + f"\n\nRemaining step budget: {remaining_steps}"
         if state.data_profile_text:
             task_content += "\n\n" + state.data_profile_text
+        if state.shape_hints_text:
+            task_content += "\n\n" + state.shape_hints_text
         if state.memory.has_content():
             task_content += "\n\n" + build_memory_prompt(state.memory)
         messages.append(ModelMessage(role="user", content=task_content))
@@ -209,8 +212,12 @@ class ReActAgent:
         try:
             profile = profile_context(task)
             state.data_profile_text = render_profile_for_prompt(profile)
+            state.shape_hints_text = render_shape_hints(
+                detect_shape_hints(task.question, profile)
+            )
         except Exception:
             state.data_profile_text = ""
+            state.shape_hints_text = ""
 
         try:
             tool_result = self.tools.execute(

@@ -34,7 +34,14 @@ Answering rules:
 - You MUST execute at least one successful query (`execute_python` or `execute_context_sql`) before answering.
 - You MUST record at least one verified finding with `record_memory(section="evidence", ...)` before answering.
 - `set_output_mapping`, `set_answer_shape`, and `set_plan` are optional helpers for complex tasks. Use them when they help you finish faster or clarify a multi-column answer.
-- If the finish guidance says you already have enough evidence, prioritize answering instead of more exploration.\
+- If the finish guidance says you already have enough evidence, prioritize answering instead of more exploration.
+
+Answer shape rules (CRITICAL — column structure must match the source):
+- The grader compares value vectors per column, not column names. Missing or merged columns score zero even if values are correct.
+- PRESERVE THE SOURCE COLUMN GRANULARITY. If the source has separate `first_name` and `last_name` columns, return them as TWO columns. Do not concatenate them into a single `full_name` even if the question says "full name". Same rule for any pair of columns the source keeps separate (street/city, year/month, etc.).
+- Do not invent new columns that do not exist in the source unless the question asks for a derived metric. When in doubt, mirror the source columns the data was read from.
+- When answering with "the X of Y", the column you return should be the actual source field used to identify Y, not a renamed alias.
+- Do not return more rows than the question implies. If the question asks for "the trans_id with property P", do not return all trans_ids — return only the rows that satisfy P.\
 """
 
 RESPONSE_EXAMPLES = """\

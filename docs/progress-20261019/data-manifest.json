@@ -1,0 +1,1675 @@
+{
+  "scope": "data/",
+  "file_count": 278,
+  "total_bytes": 1881405569,
+  "files": [
+    {
+      "path": "data/public/input/task_11/context/json/Examination.json",
+      "bytes": 253093,
+      "mtime_ns": 1774926611632899400,
+      "sha256": "1110f42e0e909827b3e318fe615438cbbd2ee8d6e2a1d758755350738df10f2c"
+    },
+    {
+      "path": "data/public/input/task_11/context/json/Patient.json",
+      "bytes": 249904,
+      "mtime_ns": 1774926611637400300,
+      "sha256": "1d7d7b633960ab892808f4f5b63f4c458d1af799b35694c70658e88d0b5f5b61"
+    },
+    {
+      "path": "data/public/input/task_11/context/knowledge.md",
+      "bytes": 5291,
+      "mtime_ns": 1774926611626385100,
+      "sha256": "3f023cce82f40639381d7b5d19bcdc6c6e1d60ad4c98cbf03fa85141fbe1a518"
+    },
+    {
+      "path": "data/public/input/task_11/task.json",
+      "bytes": 177,
+      "mtime_ns": 1774926611619885400,
+      "sha256": "b0989101d428998dae0e8f8a198829d21bb44992168cdf107acc359b103c6362"
+    },
+    {
+      "path": "data/public/input/task_145/context/csv/attendance.csv",
+      "bytes": 12092,
+      "mtime_ns": 1774926614891467500,
+      "sha256": "f53b57a64e68ca3d866a0baacf85cfff629d54fd2fe7600cadaa23242837a970"
+    },
+    {
+      "path": "data/public/input/task_145/context/db/event.db",
+      "bytes": 20480,
+      "mtime_ns": 1774926614898467400,
+      "sha256": "aa35e8d56e4c4839157c9773dc31e378dcbb2cff1587536d090a264c99effc62"
+    },
+    {
+      "path": "data/public/input/task_145/context/knowledge.md",
+      "bytes": 5459,
+      "mtime_ns": 1774926614884888900,
+      "sha256": "dece3419fab5117e096c16ea7e2eb5ad061328b67aeb345c0a1f9ab8470e82b6"
+    },
+    {
+      "path": "data/public/input/task_145/task.json",
+      "bytes": 173,
+      "mtime_ns": 1774926614878889400,
+      "sha256": "8517f2a79cbcd5d6c6d82db66039c9d69b83cbcd648421176bddeac4f1544e01"
+    },
+    {
+      "path": "data/public/input/task_163/context/csv/expense.csv",
+      "bytes": 2980,
+      "mtime_ns": 1774926616416549100,
+      "sha256": "dee9876d7f030e6e01f70fbac050f8f0e0ce8d922821822b66878a9eeb55df63"
+    },
+    {
+      "path": "data/public/input/task_163/context/db/event.db",
+      "bytes": 20480,
+      "mtime_ns": 1774926616427051900,
+      "sha256": "aa35e8d56e4c4839157c9773dc31e378dcbb2cff1587536d090a264c99effc62"
+    },
+    {
+      "path": "data/public/input/task_163/context/json/budget.json",
+      "bytes": 11786,
+      "mtime_ns": 1774926616406545400,
+      "sha256": "226370426075ad81700d7e2702374540171f685b60e1991e26570c51c92e8cb4"
+    },
+    {
+      "path": "data/public/input/task_163/context/knowledge.md",
+      "bytes": 5459,
+      "mtime_ns": 1774926616398545300,
+      "sha256": "dece3419fab5117e096c16ea7e2eb5ad061328b67aeb345c0a1f9ab8470e82b6"
+    },
+    {
+      "path": "data/public/input/task_163/task.json",
+      "bytes": 161,
+      "mtime_ns": 1774926616391045000,
+      "sha256": "eab7017845963f13a2e9773fcf75a08ba369a2b401224a40dabf81e40c58ffeb"
+    },
+    {
+      "path": "data/public/input/task_169/context/csv/yearmonth.csv",
+      "bytes": 8210334,
+      "mtime_ns": 1774926610689216100,
+      "sha256": "fd37adfc8917e4c9e0df0caf108b55eaa2bc2f38e6ae64e3e0b12baa86fbc5d0"
+    },
+    {
+      "path": "data/public/input/task_169/context/db/customers.db",
+      "bytes": 929792,
+      "mtime_ns": 1774926610700214400,
+      "sha256": "d10686f9f537573a69e0cc749a2b6c53081b12e3d81d9cfc986d90afcaa04870"
+    },
+    {
+      "path": "data/public/input/task_169/context/knowledge.md",
+      "bytes": 4795,
+      "mtime_ns": 1774926610642571200,
+      "sha256": "b0c0ec9c09a4fd0e5a133210fcbd6602d0ee44ff4ff17ac3ce654673a97d8cf9"
+    },
+    {
+      "path": "data/public/input/task_169/task.json",
+      "bytes": 151,
+      "mtime_ns": 1774926610637071700,
+      "sha256": "2dea52eae32fd6412c6af94dc6b68371d1288272ab09e9e148b8a059fd9db6dc"
+    },
+    {
+      "path": "data/public/input/task_173/context/csv/yearmonth.csv",
+      "bytes": 8210334,
+      "mtime_ns": 1774926616372026400,
+      "sha256": "fd37adfc8917e4c9e0df0caf108b55eaa2bc2f38e6ae64e3e0b12baa86fbc5d0"
+    },
+    {
+      "path": "data/public/input/task_173/context/db/transactions_1k.db",
+      "bytes": 65536,
+      "mtime_ns": 1774926616383045700,
+      "sha256": "55c28ff9efb35b94e155ca12d6ff738dca5ec68b0c2bafd86502b19184ba6b2a"
+    },
+    {
+      "path": "data/public/input/task_173/context/json/gasstations.json",
+      "bytes": 641302,
+      "mtime_ns": 1774926616323776900,
+      "sha256": "71eb357dd9410c160581b0f82bde7f4034844b0813521b85dcc2b67ca899c15b"
+    },
+    {
+      "path": "data/public/input/task_173/context/knowledge.md",
+      "bytes": 4795,
+      "mtime_ns": 1774926616316277000,
+      "sha256": "b0c0ec9c09a4fd0e5a133210fcbd6602d0ee44ff4ff17ac3ce654673a97d8cf9"
+    },
+    {
+      "path": "data/public/input/task_173/task.json",
+      "bytes": 162,
+      "mtime_ns": 1774926616309774500,
+      "sha256": "2f640d317037f32373bdd0133a02026382d92bfbc3e8decd1c1a3c7813742d80"
+    },
+    {
+      "path": "data/public/input/task_180/context/csv/yearmonth.csv",
+      "bytes": 8210334,
+      "mtime_ns": 1774926617544092700,
+      "sha256": "fd37adfc8917e4c9e0df0caf108b55eaa2bc2f38e6ae64e3e0b12baa86fbc5d0"
+    },
+    {
+      "path": "data/public/input/task_180/context/db/transactions_1k.db",
+      "bytes": 65536,
+      "mtime_ns": 1774926617552092700,
+      "sha256": "55c28ff9efb35b94e155ca12d6ff738dca5ec68b0c2bafd86502b19184ba6b2a"
+    },
+    {
+      "path": "data/public/input/task_180/context/knowledge.md",
+      "bytes": 4795,
+      "mtime_ns": 1774926617496083500,
+      "sha256": "b0c0ec9c09a4fd0e5a133210fcbd6602d0ee44ff4ff17ac3ce654673a97d8cf9"
+    },
+    {
+      "path": "data/public/input/task_180/task.json",
+      "bytes": 197,
+      "mtime_ns": 1774926617490583500,
+      "sha256": "c38aa21630056327327a1943a967b001deb285d3094fdf91d7c1720fec988630"
+    },
+    {
+      "path": "data/public/input/task_19/context/csv/member.csv",
+      "bytes": 3575,
+      "mtime_ns": 1774926614270214000,
+      "sha256": "737bd302c4b2e738505366e692a5539201a68957f6646e759e45bd109c4cd9ea"
+    },
+    {
+      "path": "data/public/input/task_19/context/json/zip_code.json",
+      "bytes": 7443215,
+      "mtime_ns": 1774926614262714200,
+      "sha256": "7f500de0189c11fa1b6383e01c4ff2b9050106a13d301a720645f0893bf24470"
+    },
+    {
+      "path": "data/public/input/task_19/context/knowledge.md",
+      "bytes": 5459,
+      "mtime_ns": 1774926614238714500,
+      "sha256": "dece3419fab5117e096c16ea7e2eb5ad061328b67aeb345c0a1f9ab8470e82b6"
+    },
+    {
+      "path": "data/public/input/task_19/task.json",
+      "bytes": 147,
+      "mtime_ns": 1774926614233214600,
+      "sha256": "44ea18849a1994f86c3c931261d363012d17dadc640bd0009fe787721c7db728"
+    },
+    {
+      "path": "data/public/input/task_194/context/csv/connected.csv",
+      "bytes": 725208,
+      "mtime_ns": 1774926619922958700,
+      "sha256": "ffbda354b94a493f6bbbe1322264f1ecd58983d331bebf264069160c53d9ed5e"
+    },
+    {
+      "path": "data/public/input/task_194/context/db/atom.db",
+      "bytes": 1384448,
+      "mtime_ns": 1774926619940468900,
+      "sha256": "46824d8757b7ff6e8af0bdd37f1c7715860ad3365a20c5ec136b3dfd5ea952ef"
+    },
+    {
+      "path": "data/public/input/task_194/context/knowledge.md",
+      "bytes": 6616,
+      "mtime_ns": 1774926619911958600,
+      "sha256": "3a4b82573eef80b231000e49e8c07cb88ee25c2ace91e76707c9ca8debddc387"
+    },
+    {
+      "path": "data/public/input/task_194/task.json",
+      "bytes": 148,
+      "mtime_ns": 1774926619905456700,
+      "sha256": "082069acda31f5b170ac8e086ea304ade6513dae5e5165153121e4c27becddb8"
+    },
+    {
+      "path": "data/public/input/task_196/context/csv/connected.csv",
+      "bytes": 725208,
+      "mtime_ns": 1774926611536957000,
+      "sha256": "ffbda354b94a493f6bbbe1322264f1ecd58983d331bebf264069160c53d9ed5e"
+    },
+    {
+      "path": "data/public/input/task_196/context/db/atom.db",
+      "bytes": 516096,
+      "mtime_ns": 1774926611547456900,
+      "sha256": "182f8f5fbf414ab955594c31eb495317195b4cea57b0c5ea44b287345ea1f23e"
+    },
+    {
+      "path": "data/public/input/task_196/context/knowledge.md",
+      "bytes": 6616,
+      "mtime_ns": 1774926611527095400,
+      "sha256": "3a4b82573eef80b231000e49e8c07cb88ee25c2ace91e76707c9ca8debddc387"
+    },
+    {
+      "path": "data/public/input/task_196/task.json",
+      "bytes": 147,
+      "mtime_ns": 1774926611520595400,
+      "sha256": "1d21f90dfadd541372b9b6376a7cd3ed63b12083965d254726f2a1a745ebb49b"
+    },
+    {
+      "path": "data/public/input/task_199/context/csv/frpm.csv",
+      "bytes": 2836512,
+      "mtime_ns": 1774926610489017400,
+      "sha256": "aa02e4eac327f3dc0c62f66e41ca96a9d84efcdeb94520df37a02aa065f5d6f9"
+    },
+    {
+      "path": "data/public/input/task_199/context/db/satscores.db",
+      "bytes": 266240,
+      "mtime_ns": 1774926610502017400,
+      "sha256": "9306a83aa42aceb4998c0ef8a8e56c91c09254a1c8f0293ee0de31bd1295c054"
+    },
+    {
+      "path": "data/public/input/task_199/context/knowledge.md",
+      "bytes": 5138,
+      "mtime_ns": 1774926610467208600,
+      "sha256": "4cf8b61c3b0127555ec3fcad05000611b01738ab01932ef06903a27fa2c2f8d4"
+    },
+    {
+      "path": "data/public/input/task_199/task.json",
+      "bytes": 208,
+      "mtime_ns": 1774926610459332200,
+      "sha256": "1ec113c7307e29d4b9634b799b9ccb7577759d83052edcacc4c16e7fedbede5f"
+    },
+    {
+      "path": "data/public/input/task_200/context/csv/atom.csv",
+      "bytes": 218746,
+      "mtime_ns": 1774926610530903400,
+      "sha256": "9c72cf1ab48f085e41d150f72066d515768bcc721703d1ea7677970aacd197cc"
+    },
+    {
+      "path": "data/public/input/task_200/context/db/bond.db",
+      "bytes": 581632,
+      "mtime_ns": 1774926610541403100,
+      "sha256": "a1f8cd0f6dda03a5da9eb573e2095826cee8119d6f572867d18b72f9daa33434"
+    },
+    {
+      "path": "data/public/input/task_200/context/json/molecule.json",
+      "bytes": 21310,
+      "mtime_ns": 1774926610521972800,
+      "sha256": "bbeecb94fbe001357ca55bf2c97c74878f1c41ef9716fac99c0acd2892e41c4d"
+    },
+    {
+      "path": "data/public/input/task_200/context/knowledge.md",
+      "bytes": 6616,
+      "mtime_ns": 1774926610515473100,
+      "sha256": "3a4b82573eef80b231000e49e8c07cb88ee25c2ace91e76707c9ca8debddc387"
+    },
+    {
+      "path": "data/public/input/task_200/task.json",
+      "bytes": 170,
+      "mtime_ns": 1774926610509517600,
+      "sha256": "d9576ec8f6fbfc1116ef4ce5dc45e65cf4c62afe9dc7fe4e75c739bfed8125fa"
+    },
+    {
+      "path": "data/public/input/task_214/context/csv/set_translations.csv",
+      "bytes": 43847,
+      "mtime_ns": 1774926614219712400,
+      "sha256": "c244d64643c6e5bd6fc0dcc4fccc0ba51284606207afa5ddcea53dc0bdd08a8d"
+    },
+    {
+      "path": "data/public/input/task_214/context/db/sets.db",
+      "bytes": 110592,
+      "mtime_ns": 1774926614227211900,
+      "sha256": "4ad3e7a5b085d5f9bd346d88eae73a668e900fb035d101088f9f00a976c8708c"
+    },
+    {
+      "path": "data/public/input/task_214/context/knowledge.md",
+      "bytes": 5350,
+      "mtime_ns": 1774926614212223200,
+      "sha256": "4e8f08310eb5eccb5cca8afcb9ceb4a13b3b86270f011432eba8a834b565d376"
+    },
+    {
+      "path": "data/public/input/task_214/task.json",
+      "bytes": 149,
+      "mtime_ns": 1774926614204723100,
+      "sha256": "8a1386bfe2dbd6f0e16ba7014c6816ca0e8f8dfedf1be55c81a89e819a4bbda7"
+    },
+    {
+      "path": "data/public/input/task_218/context/db/satscores.db",
+      "bytes": 266240,
+      "mtime_ns": 1774926619896456100,
+      "sha256": "9306a83aa42aceb4998c0ef8a8e56c91c09254a1c8f0293ee0de31bd1295c054"
+    },
+    {
+      "path": "data/public/input/task_218/context/json/schools.json",
+      "bytes": 25773221,
+      "mtime_ns": 1774926619883957800,
+      "sha256": "a54a3515d6563975054e55310f0c591d67b4e8ecc281527ebc3e361193eb666a"
+    },
+    {
+      "path": "data/public/input/task_218/context/knowledge.md",
+      "bytes": 5138,
+      "mtime_ns": 1774926619804943900,
+      "sha256": "4cf8b61c3b0127555ec3fcad05000611b01738ab01932ef06903a27fa2c2f8d4"
+    },
+    {
+      "path": "data/public/input/task_218/task.json",
+      "bytes": 175,
+      "mtime_ns": 1774926619797945000,
+      "sha256": "26e7cb8aa41ff8d04a5ca530b10bb09cc7609eb0cfaac571a75f9308eb469172"
+    },
+    {
+      "path": "data/public/input/task_22/context/csv/income.csv",
+      "bytes": 2245,
+      "mtime_ns": 1774926610630661900,
+      "sha256": "b7b53741c7432e8fff04805fee9e3b5e8783677ce40a4b9011a101ad539b4308"
+    },
+    {
+      "path": "data/public/input/task_22/context/json/member.json",
+      "bytes": 10135,
+      "mtime_ns": 1774926610623649100,
+      "sha256": "f0f2399f7b0c6c24872c81c26ac17e8cc16b3a1666e08a8962ec6a219a3cf9ca"
+    },
+    {
+      "path": "data/public/input/task_22/context/knowledge.md",
+      "bytes": 5459,
+      "mtime_ns": 1774926610617917000,
+      "sha256": "dece3419fab5117e096c16ea7e2eb5ad061328b67aeb345c0a1f9ab8470e82b6"
+    },
+    {
+      "path": "data/public/input/task_22/task.json",
+      "bytes": 116,
+      "mtime_ns": 1774926610612411200,
+      "sha256": "23bd5323a3c8a46a9205bf7ccab7b77322cc67276dc09c9e86860975e50049db"
+    },
+    {
+      "path": "data/public/input/task_24/context/csv/attendance.csv",
+      "bytes": 12092,
+      "mtime_ns": 1774926614165080100,
+      "sha256": "f53b57a64e68ca3d866a0baacf85cfff629d54fd2fe7600cadaa23242837a970"
+    },
+    {
+      "path": "data/public/input/task_24/context/json/event.json",
+      "bytes": 11197,
+      "mtime_ns": 1774926614156578500,
+      "sha256": "bd329c6de96441af3d266afd9b7eaeca15e49b59e773b159310d7bba28a0e0d4"
+    },
+    {
+      "path": "data/public/input/task_24/context/knowledge.md",
+      "bytes": 5459,
+      "mtime_ns": 1774926614150579100,
+      "sha256": "dece3419fab5117e096c16ea7e2eb5ad061328b67aeb345c0a1f9ab8470e82b6"
+    },
+    {
+      "path": "data/public/input/task_24/task.json",
+      "bytes": 124,
+      "mtime_ns": 1774926614144079000,
+      "sha256": "82551fdc97780557aec4f190f7ad1513e6080ac603ea5edaed58593d8f132603"
+    },
+    {
+      "path": "data/public/input/task_243/context/csv/votes.csv",
+      "bytes": 1046538,
+      "mtime_ns": 1774926610722557100,
+      "sha256": "fd644ab9a5bac0dad216e43dddebdb495b4e08d9e39084ee4e447171970b9819"
+    },
+    {
+      "path": "data/public/input/task_243/context/db/posts.db",
+      "bytes": 142729216,
+      "mtime_ns": 1774926611513137700,
+      "sha256": "b1b52cea9cd13626f5943d72f6d8b6a006cf3e4af36c9e0d3dd428f1808eeadf"
+    },
+    {
+      "path": "data/public/input/task_243/context/knowledge.md",
+      "bytes": 5540,
+      "mtime_ns": 1774926610711664000,
+      "sha256": "33692d70ac9bd54c0a8fec72c4f539daf1a42d70bce43810ad5e04015486f2ef"
+    },
+    {
+      "path": "data/public/input/task_243/task.json",
+      "bytes": 164,
+      "mtime_ns": 1774926610706165000,
+      "sha256": "0b57cbe890056ff2301f8f79555d697900620541ab64966f0366f0cade0a826e"
+    },
+    {
+      "path": "data/public/input/task_249/context/db/users.db",
+      "bytes": 7622656,
+      "mtime_ns": 1774926617392077700,
+      "sha256": "7965154a86da05bff5bc7c6f3b1bccc130e7dc2a5f8da0a9aa18f202da2e03e2"
+    },
+    {
+      "path": "data/public/input/task_249/context/json/posts.json",
+      "bytes": 166277775,
+      "mtime_ns": 1774926617335570600,
+      "sha256": "9a9018f7f80a62c219b654e2840fa2a186069566ec35ee982a1f7e0a3da64267"
+    },
+    {
+      "path": "data/public/input/task_249/context/knowledge.md",
+      "bytes": 5540,
+      "mtime_ns": 1774926616440558300,
+      "sha256": "33692d70ac9bd54c0a8fec72c4f539daf1a42d70bce43810ad5e04015486f2ef"
+    },
+    {
+      "path": "data/public/input/task_249/task.json",
+      "bytes": 171,
+      "mtime_ns": 1774926616434057600,
+      "sha256": "cd06523697904e58af47bad558848a00aacecc11d88194c772cda22de192a119"
+    },
+    {
+      "path": "data/public/input/task_25/context/csv/budget.csv",
+      "bytes": 3598,
+      "mtime_ns": 1774926610569474000,
+      "sha256": "22d5177094fa151fc6c2be3060191cad10dc2bd93a44bbcc066b7ba080e65004"
+    },
+    {
+      "path": "data/public/input/task_25/context/json/event.json",
+      "bytes": 11197,
+      "mtime_ns": 1774926610558616200,
+      "sha256": "bd329c6de96441af3d266afd9b7eaeca15e49b59e773b159310d7bba28a0e0d4"
+    },
+    {
+      "path": "data/public/input/task_25/context/json/expense.json",
+      "bytes": 8704,
+      "mtime_ns": 1774926610562616800,
+      "sha256": "ba9cef9d6947cadf895d3828830843688e6c1e3578569c528a85b9d38133ee4e"
+    },
+    {
+      "path": "data/public/input/task_25/context/knowledge.md",
+      "bytes": 5459,
+      "mtime_ns": 1774926610553117100,
+      "sha256": "dece3419fab5117e096c16ea7e2eb5ad061328b67aeb345c0a1f9ab8470e82b6"
+    },
+    {
+      "path": "data/public/input/task_25/task.json",
+      "bytes": 101,
+      "mtime_ns": 1774926610547616900,
+      "sha256": "a0be3299110a8a9e0751b43caa1b91d3054f51ff4a0a02cd5e3801eaf00b57e3"
+    },
+    {
+      "path": "data/public/input/task_250/context/csv/postHistory.csv",
+      "bytes": 228942242,
+      "mtime_ns": 1774926619735376900,
+      "sha256": "a4ab5a96cd6143d693e241db3818561564dda02146a7f838300cc3b71479761a"
+    },
+    {
+      "path": "data/public/input/task_250/context/db/users.db",
+      "bytes": 7622656,
+      "mtime_ns": 1774926619789876600,
+      "sha256": "7965154a86da05bff5bc7c6f3b1bccc130e7dc2a5f8da0a9aa18f202da2e03e2"
+    },
+    {
+      "path": "data/public/input/task_250/context/json/posts.json",
+      "bytes": 166277775,
+      "mtime_ns": 1774926618494681300,
+      "sha256": "9a9018f7f80a62c219b654e2840fa2a186069566ec35ee982a1f7e0a3da64267"
+    },
+    {
+      "path": "data/public/input/task_250/context/knowledge.md",
+      "bytes": 5540,
+      "mtime_ns": 1774926617668123400,
+      "sha256": "33692d70ac9bd54c0a8fec72c4f539daf1a42d70bce43810ad5e04015486f2ef"
+    },
+    {
+      "path": "data/public/input/task_250/task.json",
+      "bytes": 142,
+      "mtime_ns": 1774926617662124900,
+      "sha256": "8ab60b43418740906dba663babe44eddd2f30d03569af6c89076f72918be46f7"
+    },
+    {
+      "path": "data/public/input/task_257/context/db/postHistory.db",
+      "bytes": 276455424,
+      "mtime_ns": 1774926614137079100,
+      "sha256": "4ad720f46d0feeb1793bdf4103fe0148fae552341d765d6f979ed5ae87940983"
+    },
+    {
+      "path": "data/public/input/task_257/context/json/posts.json",
+      "bytes": 166277775,
+      "mtime_ns": 1774926612766098400,
+      "sha256": "9a9018f7f80a62c219b654e2840fa2a186069566ec35ee982a1f7e0a3da64267"
+    },
+    {
+      "path": "data/public/input/task_257/context/json/users.json",
+      "bytes": 19518174,
+      "mtime_ns": 1774926611979516600,
+      "sha256": "8472f2d0cb5607343f874036f659fb343d9211e2c8bd06b2a3428334e55acdda"
+    },
+    {
+      "path": "data/public/input/task_257/context/knowledge.md",
+      "bytes": 5540,
+      "mtime_ns": 1774926611905898500,
+      "sha256": "33692d70ac9bd54c0a8fec72c4f539daf1a42d70bce43810ad5e04015486f2ef"
+    },
+    {
+      "path": "data/public/input/task_257/task.json",
+      "bytes": 173,
+      "mtime_ns": 1774926611900400400,
+      "sha256": "86d4f69ce4e2a0a18805ce2609bc6b4ac1271f2451bf72ed7b50c70ce3b8f28a"
+    },
+    {
+      "path": "data/public/input/task_259/context/csv/comments.csv",
+      "bytes": 48122214,
+      "mtime_ns": 1774926615520689300,
+      "sha256": "b8db2e4ee4be929b84ec08037a1f38c0cbbc08c8b3de5b5adca07dfa4f51c0d6"
+    },
+    {
+      "path": "data/public/input/task_259/context/db/posts.db",
+      "bytes": 142729216,
+      "mtime_ns": 1774926616303274400,
+      "sha256": "b1b52cea9cd13626f5943d72f6d8b6a006cf3e4af36c9e0d3dd428f1808eeadf"
+    },
+    {
+      "path": "data/public/input/task_259/context/knowledge.md",
+      "bytes": 5540,
+      "mtime_ns": 1774926615234634800,
+      "sha256": "33692d70ac9bd54c0a8fec72c4f539daf1a42d70bce43810ad5e04015486f2ef"
+    },
+    {
+      "path": "data/public/input/task_259/task.json",
+      "bytes": 167,
+      "mtime_ns": 1774926615228625800,
+      "sha256": "abd2b93a2fbcfe94e504aeecf9a9773865bd2c2b0a9c246de111ac397a75cabf"
+    },
+    {
+      "path": "data/public/input/task_26/context/json/major.json",
+      "bytes": 24152,
+      "mtime_ns": 1774926617451583800,
+      "sha256": "21b8ec278ccf8f578550d2521725340248b1f2af979db21dad84c9b34079b01e"
+    },
+    {
+      "path": "data/public/input/task_26/context/json/member.json",
+      "bytes": 10135,
+      "mtime_ns": 1774926617447583500,
+      "sha256": "f0f2399f7b0c6c24872c81c26ac17e8cc16b3a1666e08a8962ec6a219a3cf9ca"
+    },
+    {
+      "path": "data/public/input/task_26/context/knowledge.md",
+      "bytes": 5459,
+      "mtime_ns": 1774926617440083500,
+      "sha256": "dece3419fab5117e096c16ea7e2eb5ad061328b67aeb345c0a1f9ab8470e82b6"
+    },
+    {
+      "path": "data/public/input/task_26/task.json",
+      "bytes": 139,
+      "mtime_ns": 1774926617432083500,
+      "sha256": "080b83bd03f0fac1a79178dace35373514b1d76c452684febfee8a758c489cfa"
+    },
+    {
+      "path": "data/public/input/task_261/context/csv/superhero.csv",
+      "bytes": 36279,
+      "mtime_ns": 1774926611747929800,
+      "sha256": "b294455d08b8184ae2de44f480bed61b208a136f4272fe14ffe9df4f6b967841"
+    },
+    {
+      "path": "data/public/input/task_261/context/db/hero_power.db",
+      "bytes": 73728,
+      "mtime_ns": 1774926611757929800,
+      "sha256": "69096976fe9c31ac3ce7004ef0a5d5c69135330e5682178a13c4c6295831c7fb"
+    },
+    {
+      "path": "data/public/input/task_261/context/json/superpower.json",
+      "bytes": 11068,
+      "mtime_ns": 1774926611738928900,
+      "sha256": "b27d1bc2c5df129dab22b4e0a4cc2b954672b8ffa50361f6d3d089b0f6d08b5d"
+    },
+    {
+      "path": "data/public/input/task_261/context/knowledge.md",
+      "bytes": 5603,
+      "mtime_ns": 1774926611731929900,
+      "sha256": "24f61bab8eb72c4de54ad92893ad106bbf5fe8e53b3389805261c62c823d48ad"
+    },
+    {
+      "path": "data/public/input/task_261/task.json",
+      "bytes": 183,
+      "mtime_ns": 1774926611723420200,
+      "sha256": "23b472f45b63539aa3fbaeb50d4c12db094c38887e0827936f9dacf775f97ff6"
+    },
+    {
+      "path": "data/public/input/task_269/context/csv/hero_power.csv",
+      "bytes": 45546,
+      "mtime_ns": 1774926610441666300,
+      "sha256": "bc1645a5c5d746dfaf88cdf948ad4f73014f3c5361a091bd099141657cbfee91"
+    },
+    {
+      "path": "data/public/input/task_269/context/db/superhero.db",
+      "bytes": 40960,
+      "mtime_ns": 1774926610451332800,
+      "sha256": "c34580890e211bf975aa53d0be6b0617a7a39be29b61238720826acaebb501b7"
+    },
+    {
+      "path": "data/public/input/task_269/context/json/superpower.json",
+      "bytes": 11068,
+      "mtime_ns": 1774926610432666300,
+      "sha256": "b27d1bc2c5df129dab22b4e0a4cc2b954672b8ffa50361f6d3d089b0f6d08b5d"
+    },
+    {
+      "path": "data/public/input/task_269/context/knowledge.md",
+      "bytes": 5603,
+      "mtime_ns": 1774926610425657600,
+      "sha256": "24f61bab8eb72c4de54ad92893ad106bbf5fe8e53b3389805261c62c823d48ad"
+    },
+    {
+      "path": "data/public/input/task_269/task.json",
+      "bytes": 140,
+      "mtime_ns": 1774926610419658300,
+      "sha256": "3d629dae13b6a7a6a919f2a682ba812b9dd262132715ddf8b70a737f735c05a6"
+    },
+    {
+      "path": "data/public/input/task_27/context/json/expense.json",
+      "bytes": 8704,
+      "mtime_ns": 1774926617623600000,
+      "sha256": "ba9cef9d6947cadf895d3828830843688e6c1e3578569c528a85b9d38133ee4e"
+    },
+    {
+      "path": "data/public/input/task_27/context/json/member.json",
+      "bytes": 10135,
+      "mtime_ns": 1774926617619599900,
+      "sha256": "f0f2399f7b0c6c24872c81c26ac17e8cc16b3a1666e08a8962ec6a219a3cf9ca"
+    },
+    {
+      "path": "data/public/input/task_27/context/knowledge.md",
+      "bytes": 5459,
+      "mtime_ns": 1774926617613598400,
+      "sha256": "dece3419fab5117e096c16ea7e2eb5ad061328b67aeb345c0a1f9ab8470e82b6"
+    },
+    {
+      "path": "data/public/input/task_27/task.json",
+      "bytes": 153,
+      "mtime_ns": 1774926617608098300,
+      "sha256": "9099151af1a92d96250a66adf83dee926843f26ad088fb1b372517a0c6545c85"
+    },
+    {
+      "path": "data/public/input/task_283/context/db/superhero.db",
+      "bytes": 40960,
+      "mtime_ns": 1774926611893898400,
+      "sha256": "c34580890e211bf975aa53d0be6b0617a7a39be29b61238720826acaebb501b7"
+    },
+    {
+      "path": "data/public/input/task_283/context/json/colour.json",
+      "bytes": 1971,
+      "mtime_ns": 1774926611885898500,
+      "sha256": "97caf298a73da597874f94fbae9795f901f3c2e31886b52edcc7eb4a00582520"
+    },
+    {
+      "path": "data/public/input/task_283/context/knowledge.md",
+      "bytes": 5603,
+      "mtime_ns": 1774926611879398500,
+      "sha256": "24f61bab8eb72c4de54ad92893ad106bbf5fe8e53b3389805261c62c823d48ad"
+    },
+    {
+      "path": "data/public/input/task_283/task.json",
+      "bytes": 127,
+      "mtime_ns": 1774926611872898500,
+      "sha256": "2172e06e058ff488899288e36607ef07dd1bc06cb2dce507e2bdd119f05712f6"
+    },
+    {
+      "path": "data/public/input/task_287/context/csv/hero_power.csv",
+      "bytes": 45546,
+      "mtime_ns": 1774926614865242500,
+      "sha256": "bc1645a5c5d746dfaf88cdf948ad4f73014f3c5361a091bd099141657cbfee91"
+    },
+    {
+      "path": "data/public/input/task_287/context/db/superhero.db",
+      "bytes": 40960,
+      "mtime_ns": 1774926614872741800,
+      "sha256": "c34580890e211bf975aa53d0be6b0617a7a39be29b61238720826acaebb501b7"
+    },
+    {
+      "path": "data/public/input/task_287/context/json/gender.json",
+      "bytes": 196,
+      "mtime_ns": 1774926614853741000,
+      "sha256": "1d96d8000d78ab6c631843e01c0f1b7d7f06b87b5e75f711be135b927c5bdb2a"
+    },
+    {
+      "path": "data/public/input/task_287/context/json/superpower.json",
+      "bytes": 11068,
+      "mtime_ns": 1774926614857741400,
+      "sha256": "b27d1bc2c5df129dab22b4e0a4cc2b954672b8ffa50361f6d3d089b0f6d08b5d"
+    },
+    {
+      "path": "data/public/input/task_287/context/knowledge.md",
+      "bytes": 5603,
+      "mtime_ns": 1774926614847318400,
+      "sha256": "24f61bab8eb72c4de54ad92893ad106bbf5fe8e53b3389805261c62c823d48ad"
+    },
+    {
+      "path": "data/public/input/task_287/task.json",
+      "bytes": 146,
+      "mtime_ns": 1774926614841251400,
+      "sha256": "93995ae5896375cf540a322e1ac3b4336e3dcfefda6348882eb445ef6b647638"
+    },
+    {
+      "path": "data/public/input/task_292/context/db/constructorResults.db",
+      "bytes": 172032,
+      "mtime_ns": 1774926617483583500,
+      "sha256": "52506baeb22e770174a6f94c65633376e33b446d913d88f2f11f97998755814d"
+    },
+    {
+      "path": "data/public/input/task_292/context/json/constructors.json",
+      "bytes": 40365,
+      "mtime_ns": 1774926617474583900,
+      "sha256": "c354225e3e7faf44c1fb68e7d7ee7f6fa1f08f48c3380a174cf906de5d535df2"
+    },
+    {
+      "path": "data/public/input/task_292/context/knowledge.md",
+      "bytes": 5698,
+      "mtime_ns": 1774926617468083500,
+      "sha256": "bf2553ad3f9b802af77fc99dc8c12b78457ab09c2c94d57b93a6f3c3c9cbc9bb"
+    },
+    {
+      "path": "data/public/input/task_292/task.json",
+      "bytes": 173,
+      "mtime_ns": 1774926617461083500,
+      "sha256": "147bd250496d6abd50cce4539b53ada9d50b60c78a594d5cfa0e8086b129d3ca"
+    },
+    {
+      "path": "data/public/input/task_303/context/db/races.db",
+      "bytes": 212992,
+      "mtime_ns": 1774926611668908200,
+      "sha256": "57076c6d811da4dd3f576a6338d42be64de4d7aed13a008822b5f2b7e7e8f2f8"
+    },
+    {
+      "path": "data/public/input/task_303/context/json/circuits.json",
+      "bytes": 21033,
+      "mtime_ns": 1774926611658408300,
+      "sha256": "506bac272547918fefd932865811ec05e3a939be697471ec2a28c666a11b95b8"
+    },
+    {
+      "path": "data/public/input/task_303/context/knowledge.md",
+      "bytes": 5698,
+      "mtime_ns": 1774926611651408300,
+      "sha256": "bf2553ad3f9b802af77fc99dc8c12b78457ab09c2c94d57b93a6f3c3c9cbc9bb"
+    },
+    {
+      "path": "data/public/input/task_303/task.json",
+      "bytes": 168,
+      "mtime_ns": 1774926611644899900,
+      "sha256": "187344fcceabba28c94487a573b92e2555a4e7178d879aef241361e7a51f395b"
+    },
+    {
+      "path": "data/public/input/task_305/context/csv/results.csv",
+      "bytes": 1229092,
+      "mtime_ns": 1774926611856398300,
+      "sha256": "6c4d1e49e60504539a71c958d0103645160ec23c8caf667e88c83f1b6c2cc1a0"
+    },
+    {
+      "path": "data/public/input/task_305/context/db/races.db",
+      "bytes": 212992,
+      "mtime_ns": 1774926611865898500,
+      "sha256": "57076c6d811da4dd3f576a6338d42be64de4d7aed13a008822b5f2b7e7e8f2f8"
+    },
+    {
+      "path": "data/public/input/task_305/context/knowledge.md",
+      "bytes": 5698,
+      "mtime_ns": 1774926611841297700,
+      "sha256": "bf2553ad3f9b802af77fc99dc8c12b78457ab09c2c94d57b93a6f3c3c9cbc9bb"
+    },
+    {
+      "path": "data/public/input/task_305/task.json",
+      "bytes": 152,
+      "mtime_ns": 1774926611834817800,
+      "sha256": "be9ab4610a0a2e463e5e808bc69f6da55fc95aeb9b091595d1e9af298052fd7b"
+    },
+    {
+      "path": "data/public/input/task_330/context/csv/Match.csv",
+      "bytes": 279413107,
+      "mtime_ns": 1774926620748869400,
+      "sha256": "b362ed16b49bf01ffdfbabd4e24db9aec8ad6d12876bd53901a7c6b4a01d8a5a"
+    },
+    {
+      "path": "data/public/input/task_330/context/doc/League.md",
+      "bytes": 12732,
+      "mtime_ns": 1774926620756369400,
+      "sha256": "d81bbd9ec3db9bae1996ce53c6668f0743c7e613aafc0f4b2ada050832620421"
+    },
+    {
+      "path": "data/public/input/task_330/context/knowledge.md",
+      "bytes": 5682,
+      "mtime_ns": 1774926619956467500,
+      "sha256": "2afa4a2e9d5224c72fa1aa4f9978ee056f73bd049dc354fce559454f505e249d"
+    },
+    {
+      "path": "data/public/input/task_330/task.json",
+      "bytes": 202,
+      "mtime_ns": 1774926619950966800,
+      "sha256": "a91708ec935915cdd06703c1eae41463c8b59d5827350d4aa6cec121d1f8c18e"
+    },
+    {
+      "path": "data/public/input/task_344/context/csv/Laboratory.csv",
+      "bytes": 1531183,
+      "mtime_ns": 1774926615215775500,
+      "sha256": "32265d62483d6d5e7bdbe55bc99105148f0ef8712db3deda4a705a3d5376f892"
+    },
+    {
+      "path": "data/public/input/task_344/context/doc/Patient.md",
+      "bytes": 55808,
+      "mtime_ns": 1774926615222776500,
+      "sha256": "253754cf3ae6328ae1c0b30fadccb86a946b7349d076b9c07b0bb441b67181a6"
+    },
+    {
+      "path": "data/public/input/task_344/context/knowledge.md",
+      "bytes": 5291,
+      "mtime_ns": 1774926615201774000,
+      "sha256": "3f023cce82f40639381d7b5d19bcdc6c6e1d60ad4c98cbf03fa85141fbe1a518"
+    },
+    {
+      "path": "data/public/input/task_344/context/male_ids_extracted.txt",
+      "bytes": 58,
+      "mtime_ns": 1775705903934552300,
+      "sha256": "3093b233a6804be58955ee69bf7ae553f6c9e71e69ddd4eb407e653558e96091"
+    },
+    {
+      "path": "data/public/input/task_344/scratch/final_count.csv",
+      "bytes": 11,
+      "mtime_ns": 1775702799430383400,
+      "sha256": "97900ecf5498b412db2eb8384e87d06515327b0f42e485dc570e9489bc6929d4"
+    },
+    {
+      "path": "data/public/input/task_344/scratch/lab_id_wbc_fg_preview.csv",
+      "bytes": 4468,
+      "mtime_ns": 1775702686743462800,
+      "sha256": "ee820d7d6c1e9cdab003feba10c23b317c3a2d1c79a8eb538734a419486eeffe"
+    },
+    {
+      "path": "data/public/input/task_344/scratch/male_ids_extracted.txt",
+      "bytes": 889,
+      "mtime_ns": 1775702686741967300,
+      "sha256": "80da66c676132639f66d55d500724385b44d84c2d98cbe08acea58ccad0337dc"
+    },
+    {
+      "path": "data/public/input/task_344/task.json",
+      "bytes": 191,
+      "mtime_ns": 1774926615195773200,
+      "sha256": "7c48fb57b5922a7897b6035a75c053a58b100d9131907189202b1ac4459bb470"
+    },
+    {
+      "path": "data/public/input/task_349/context/csv/member.csv",
+      "bytes": 3575,
+      "mtime_ns": 1774926611783930700,
+      "sha256": "737bd302c4b2e738505366e692a5539201a68957f6646e759e45bd109c4cd9ea"
+    },
+    {
+      "path": "data/public/input/task_349/context/doc/major.md",
+      "bytes": 74952,
+      "mtime_ns": 1774926611792430500,
+      "sha256": "f7e5e0b73064fd517bc34b9da914ddc20c9a9d14ad8cde74810a278f80a0f9a0"
+    },
+    {
+      "path": "data/public/input/task_349/context/knowledge.md",
+      "bytes": 5459,
+      "mtime_ns": 1774926611774430100,
+      "sha256": "dece3419fab5117e096c16ea7e2eb5ad061328b67aeb345c0a1f9ab8470e82b6"
+    },
+    {
+      "path": "data/public/input/task_349/task.json",
+      "bytes": 100,
+      "mtime_ns": 1774926611767429700,
+      "sha256": "6d8c858e0cd1729a1dff25e2e29861f11bce89b5c411a36fec7f19162368f9bb"
+    },
+    {
+      "path": "data/public/input/task_350/context/csv/member.csv",
+      "bytes": 3575,
+      "mtime_ns": 1774926611692408600,
+      "sha256": "737bd302c4b2e738505366e692a5539201a68957f6646e759e45bd109c4cd9ea"
+    },
+    {
+      "path": "data/public/input/task_350/context/db/attendance.db",
+      "bytes": 45056,
+      "mtime_ns": 1774926611700908500,
+      "sha256": "134ee5475be8d5003bdb628494f9736820c8dab5ace0189b33305667e2f45294"
+    },
+    {
+      "path": "data/public/input/task_350/context/doc/event.md",
+      "bytes": 58770,
+      "mtime_ns": 1774926611714920800,
+      "sha256": "af25336c92c8a7254e99b895f02ed4f8892ba241ef3f4108e62d39f275b673bf"
+    },
+    {
+      "path": "data/public/input/task_350/context/doc/event_event.md",
+      "bytes": 60320,
+      "mtime_ns": 1774926611709916800,
+      "sha256": "d7ca240e753c217b37a51ab6d45b905fecdf7c67715851ee40ffddc38db6d221"
+    },
+    {
+      "path": "data/public/input/task_350/context/knowledge.md",
+      "bytes": 5459,
+      "mtime_ns": 1774926611683908600,
+      "sha256": "dece3419fab5117e096c16ea7e2eb5ad061328b67aeb345c0a1f9ab8470e82b6"
+    },
+    {
+      "path": "data/public/input/task_350/task.json",
+      "bytes": 208,
+      "mtime_ns": 1774926611676908900,
+      "sha256": "41ff338966e77d2d57af6e8592105c285716c6d4e5ca9c4fae5a3b7d59007334"
+    },
+    {
+      "path": "data/public/input/task_352/context/csv/event.csv",
+      "bytes": 4733,
+      "mtime_ns": 1774926614323779700,
+      "sha256": "977ce94a3f4cae43e9cddd0c02cf864f094158ec987321d9c155887e34a4c8bb"
+    },
+    {
+      "path": "data/public/input/task_352/context/doc/budget.md",
+      "bytes": 62672,
+      "mtime_ns": 1774926614330789500,
+      "sha256": "315d9d376a9c1831b2c639594f7f40c93cd555868bacb8bd45f3e174d51a2eea"
+    },
+    {
+      "path": "data/public/input/task_352/context/knowledge.md",
+      "bytes": 5459,
+      "mtime_ns": 1774926614316029500,
+      "sha256": "dece3419fab5117e096c16ea7e2eb5ad061328b67aeb345c0a1f9ab8470e82b6"
+    },
+    {
+      "path": "data/public/input/task_352/task.json",
+      "bytes": 178,
+      "mtime_ns": 1774926614310527900,
+      "sha256": "d014db4e87159911daf4fa290c9d8ffe37ae5c56c758c5c78854f964b471d1ab"
+    },
+    {
+      "path": "data/public/input/task_355/context/csv/expense.csv",
+      "bytes": 2980,
+      "mtime_ns": 1774926611605883000,
+      "sha256": "dee9876d7f030e6e01f70fbac050f8f0e0ce8d922821822b66878a9eeb55df63"
+    },
+    {
+      "path": "data/public/input/task_355/context/doc/member.md",
+      "bytes": 33269,
+      "mtime_ns": 1774926611612883300,
+      "sha256": "663b3ae3750601b31b2d1b0a911bcf88d7ccd55669c8e0f802f1ac7f12e762b0"
+    },
+    {
+      "path": "data/public/input/task_355/context/knowledge.md",
+      "bytes": 5459,
+      "mtime_ns": 1774926611596883400,
+      "sha256": "dece3419fab5117e096c16ea7e2eb5ad061328b67aeb345c0a1f9ab8470e82b6"
+    },
+    {
+      "path": "data/public/input/task_355/task.json",
+      "bytes": 183,
+      "mtime_ns": 1774926611588374800,
+      "sha256": "a89e28f35147d06b101f692cbe9dda7f0f227a8a695b40dbbbd754da9510e42e"
+    },
+    {
+      "path": "data/public/input/task_379/context/csv/atom.csv",
+      "bytes": 218746,
+      "mtime_ns": 1774926617571593400,
+      "sha256": "9c72cf1ab48f085e41d150f72066d515768bcc721703d1ea7677970aacd197cc"
+    },
+    {
+      "path": "data/public/input/task_379/context/doc/molecule.md",
+      "bytes": 36408,
+      "mtime_ns": 1774926617578092700,
+      "sha256": "1991ae45a8bcebc292badef56502dd8ad7b19cbf2cc8b112f90feb5f42f684a6"
+    },
+    {
+      "path": "data/public/input/task_379/context/knowledge.md",
+      "bytes": 6616,
+      "mtime_ns": 1774926617563592800,
+      "sha256": "3a4b82573eef80b231000e49e8c07cb88ee25c2ace91e76707c9ca8debddc387"
+    },
+    {
+      "path": "data/public/input/task_379/task.json",
+      "bytes": 154,
+      "mtime_ns": 1774926617558092700,
+      "sha256": "5fbc3b47c522b6658754a6bebf3e0b98ece0f9e43abb1c441fe665bfbf033906"
+    },
+    {
+      "path": "data/public/input/task_38/context/csv/disp.csv",
+      "bytes": 118970,
+      "mtime_ns": 1774926614954948500,
+      "sha256": "19353276ccd26d87f096497cb0c98786f753c885fe2cfb547b954db4ceff29f6"
+    },
+    {
+      "path": "data/public/input/task_38/context/csv/trans.csv",
+      "bytes": 59775097,
+      "mtime_ns": 1774926615187975900,
+      "sha256": "be435fb8ef7660ca129295557ed5b1fafaeaa86071e7d02f908338017544e7f6"
+    },
+    {
+      "path": "data/public/input/task_38/context/json/account.json",
+      "bytes": 582852,
+      "mtime_ns": 1774926614942220700,
+      "sha256": "4daefad01fa79174064352d191ac7d968f1fe2aad44c0df6e49c3a1e01b50eb6"
+    },
+    {
+      "path": "data/public/input/task_38/context/json/client.json",
+      "bytes": 626351,
+      "mtime_ns": 1774926614947221300,
+      "sha256": "f47752cda41d337af42aa80e106839244d01d389a035df3539ad898d43807ab1"
+    },
+    {
+      "path": "data/public/input/task_38/context/knowledge.md",
+      "bytes": 4870,
+      "mtime_ns": 1774926614934720500,
+      "sha256": "3df0df2dcab54716e2135033d1a4c279da2b6be536b0aa4084f73c0f38c95cce"
+    },
+    {
+      "path": "data/public/input/task_38/context/scratch_output/cash_withdrawals_client_3356.csv",
+      "bytes": 10000,
+      "mtime_ns": 1775705032619131600,
+      "sha256": "87d510a0d50c3b1fd757e3a63876712a5a794e8a479e3a755d0166093c0a9e16"
+    },
+    {
+      "path": "data/public/input/task_38/context/scratch_output/cash_withdrawals_exact_VYBER_2779.csv",
+      "bytes": 9054,
+      "mtime_ns": 1775711986784248400,
+      "sha256": "d9cdbc7c2f30aeeb87bd64495f3be35f1da3a47ce247998fa98029942b2d57ee"
+    },
+    {
+      "path": "data/public/input/task_38/context/scratch_output/trans_matches_client_3356.csv",
+      "bytes": 32516,
+      "mtime_ns": 1775620570309950500,
+      "sha256": "e68e272685892271262e8135f7051a161879f360f1b2269e1cf40b4c18d6297d"
+    },
+    {
+      "path": "data/public/input/task_38/task.json",
+      "bytes": 154,
+      "mtime_ns": 1774926614929216000,
+      "sha256": "53d4a9647129ea893d0a6fc8e21c46046002a66da87ee5bb2be4cf3fdc1d2892"
+    },
+    {
+      "path": "data/public/input/task_396/context/calc_verification.txt",
+      "bytes": 68,
+      "mtime_ns": 1775700053647400200,
+      "sha256": "72bafb778dca5872ac5cb92627a93b0b74c0130fa627c2f85051e6b9b5a6f503"
+    },
+    {
+      "path": "data/public/input/task_396/context/doc/superhero.md",
+      "bytes": 177990,
+      "mtime_ns": 1774926614923212900,
+      "sha256": "76ac29a04b72e07e64676064b5853c3092a825e8746775b2686a5c10b8ebad0b"
+    },
+    {
+      "path": "data/public/input/task_396/context/json/publisher.json",
+      "bytes": 1713,
+      "mtime_ns": 1774926614916212200,
+      "sha256": "738e1c6b9f15df2b923452fb214f223cd3d172a23ceb17e9625e024a71c3d557"
+    },
+    {
+      "path": "data/public/input/task_396/context/knowledge.md",
+      "bytes": 5603,
+      "mtime_ns": 1774926614910211100,
+      "sha256": "24f61bab8eb72c4de54ad92893ad106bbf5fe8e53b3389805261c62c823d48ad"
+    },
+    {
+      "path": "data/public/input/task_396/task.json",
+      "bytes": 177,
+      "mtime_ns": 1774926614904710700,
+      "sha256": "15153a53b8297318843db225f577061a9da8918468f892bf402aa811fef9ece7"
+    },
+    {
+      "path": "data/public/input/task_408/context/db/results.db",
+      "bytes": 1007616,
+      "mtime_ns": 1774926614798203600,
+      "sha256": "619d1d07d47e5e6b54a9cf6d21b27a235e65db26cdb9cf0dec00d02a35fd0456"
+    },
+    {
+      "path": "data/public/input/task_408/context/doc/races.md",
+      "bytes": 86259,
+      "mtime_ns": 1774926614804702900,
+      "sha256": "207c1991932b0cdf2603c19eb8bbf4fe5fc9a51842b4e543aa2f3256b8eb6b66"
+    },
+    {
+      "path": "data/public/input/task_408/context/knowledge.md",
+      "bytes": 5698,
+      "mtime_ns": 1774926614784703800,
+      "sha256": "bf2553ad3f9b802af77fc99dc8c12b78457ab09c2c94d57b93a6f3c3c9cbc9bb"
+    },
+    {
+      "path": "data/public/input/task_408/task.json",
+      "bytes": 193,
+      "mtime_ns": 1774926614778703500,
+      "sha256": "37453a452b2661b142819628b6e09119d097030674640012e24db71cd8ff2163"
+    },
+    {
+      "path": "data/public/input/task_415/context/db/results.db",
+      "bytes": 1007616,
+      "mtime_ns": 1774926610599867200,
+      "sha256": "619d1d07d47e5e6b54a9cf6d21b27a235e65db26cdb9cf0dec00d02a35fd0456"
+    },
+    {
+      "path": "data/public/input/task_415/context/doc/races.md",
+      "bytes": 92407,
+      "mtime_ns": 1774926610606366300,
+      "sha256": "2b666c4524295532c0cc45a4e706ef7d5943c3099571bbbb0c31a8b10f4e1167"
+    },
+    {
+      "path": "data/public/input/task_415/context/json/constructors.json",
+      "bytes": 40365,
+      "mtime_ns": 1774926610586861200,
+      "sha256": "c354225e3e7faf44c1fb68e7d7ee7f6fa1f08f48c3380a174cf906de5d535df2"
+    },
+    {
+      "path": "data/public/input/task_415/context/knowledge.md",
+      "bytes": 5698,
+      "mtime_ns": 1774926610580861800,
+      "sha256": "bf2553ad3f9b802af77fc99dc8c12b78457ab09c2c94d57b93a6f3c3c9cbc9bb"
+    },
+    {
+      "path": "data/public/input/task_415/task.json",
+      "bytes": 183,
+      "mtime_ns": 1774926610575473100,
+      "sha256": "869f7681d9733ec99c53f6543686b61c113ad7f5f38c8c2a68f10ae7e03c1d3b"
+    },
+    {
+      "path": "data/public/input/task_418/context/doc/Laboratory.md",
+      "bytes": 286513,
+      "mtime_ns": 1774926617602098400,
+      "sha256": "fd01cb8ae7f692ba8604dc685889616cab6eaeda7665a210569bac04d6af5c6b"
+    },
+    {
+      "path": "data/public/input/task_418/context/doc/Patient.md",
+      "bytes": 84958,
+      "mtime_ns": 1774926617596596200,
+      "sha256": "0b88db6e9b01ed3d43f2537b458663f40bb915e2c760ec672f2b3675c78a4b88"
+    },
+    {
+      "path": "data/public/input/task_418/context/knowledge.md",
+      "bytes": 5291,
+      "mtime_ns": 1774926617590594600,
+      "sha256": "3f023cce82f40639381d7b5d19bcdc6c6e1d60ad4c98cbf03fa85141fbe1a518"
+    },
+    {
+      "path": "data/public/input/task_418/task.json",
+      "bytes": 159,
+      "mtime_ns": 1774926617585094600,
+      "sha256": "7ad75f3e384a270aa08d28f19d46f0042bdcb82bb7f67f93c0329a0e6e45aed3"
+    },
+    {
+      "path": "data/public/input/task_420/context/csv/legalities.csv",
+      "bytes": 24974984,
+      "mtime_ns": 1774926614422638400,
+      "sha256": "fd4300d703ad26de8505b3c592d948f165dc8de7263e7b1429005c2d2c228159"
+    },
+    {
+      "path": "data/public/input/task_420/context/db/cards.db",
+      "bytes": 61579264,
+      "mtime_ns": 1774926614756200300,
+      "sha256": "0db1bdda70e95ebd753352a129fb7078b6ccca5ea21ad91ebd76e9371d42d082"
+    },
+    {
+      "path": "data/public/input/task_420/context/doc/cards.md",
+      "bytes": 1103516,
+      "mtime_ns": 1774926614771703700,
+      "sha256": "b17d92b88b33649cef498889fcd0b9de3897261c015a8a4adf857ed772ed3705"
+    },
+    {
+      "path": "data/public/input/task_420/context/doc/legalities.md",
+      "bytes": 56877,
+      "mtime_ns": 1774926614763203400,
+      "sha256": "6fd2ad799e63169b0a5d02dab9fcf9890fab1ee2aa03eb4420e9128a43ad52e5"
+    },
+    {
+      "path": "data/public/input/task_420/context/knowledge.md",
+      "bytes": 5350,
+      "mtime_ns": 1774926614343135500,
+      "sha256": "4e8f08310eb5eccb5cca8afcb9ceb4a13b3b86270f011432eba8a834b565d376"
+    },
+    {
+      "path": "data/public/input/task_420/task.json",
+      "bytes": 167,
+      "mtime_ns": 1774926614337636200,
+      "sha256": "1ff767a6c45dbee2c68b610fee82ddec2c22ffac50d6fde3c3db03e902c8b7b1"
+    },
+    {
+      "path": "data/public/input/task_64/context/csv/hero_power.csv",
+      "bytes": 45546,
+      "mtime_ns": 1774926614835251300,
+      "sha256": "bc1645a5c5d746dfaf88cdf948ad4f73014f3c5361a091bd099141657cbfee91"
+    },
+    {
+      "path": "data/public/input/task_64/context/csv/superpower.csv",
+      "bytes": 3188,
+      "mtime_ns": 1774926614829870100,
+      "sha256": "b0291f9f8391fb533cde8f0db7e7cf37e04351b7a9e220c33cc0529278aeb515"
+    },
+    {
+      "path": "data/public/input/task_64/context/json/superhero.json",
+      "bytes": 240215,
+      "mtime_ns": 1774926614822861600,
+      "sha256": "c08fa59bdd1ff73ace32793f33f13177141244fa112264eb2de748db5fd1d0e8"
+    },
+    {
+      "path": "data/public/input/task_64/context/knowledge.md",
+      "bytes": 5603,
+      "mtime_ns": 1774926614816206500,
+      "sha256": "24f61bab8eb72c4de54ad92893ad106bbf5fe8e53b3389805261c62c823d48ad"
+    },
+    {
+      "path": "data/public/input/task_64/task.json",
+      "bytes": 112,
+      "mtime_ns": 1774926614810703400,
+      "sha256": "e5578804dc50a23055e12f455671a4febdba49b9d076ff90913fd8841c640913"
+    },
+    {
+      "path": "data/public/input/task_67/context/csv/superhero.csv",
+      "bytes": 36279,
+      "mtime_ns": 1774926611579371300,
+      "sha256": "b294455d08b8184ae2de44f480bed61b208a136f4272fe14ffe9df4f6b967841"
+    },
+    {
+      "path": "data/public/input/task_67/context/json/gender.json",
+      "bytes": 196,
+      "mtime_ns": 1774926611568871600,
+      "sha256": "1d96d8000d78ab6c631843e01c0f1b7d7f06b87b5e75f711be135b927c5bdb2a"
+    },
+    {
+      "path": "data/public/input/task_67/context/knowledge.md",
+      "bytes": 5603,
+      "mtime_ns": 1774926611561826700,
+      "sha256": "24f61bab8eb72c4de54ad92893ad106bbf5fe8e53b3389805261c62c823d48ad"
+    },
+    {
+      "path": "data/public/input/task_67/task.json",
+      "bytes": 122,
+      "mtime_ns": 1774926611555324900,
+      "sha256": "d49d439fbebc2e1789174c6c6d094348f52c2271b831c2c97995154eb8475352"
+    },
+    {
+      "path": "data/public/input/task_74/context/csv/superhero.csv",
+      "bytes": 36279,
+      "mtime_ns": 1774926614196082100,
+      "sha256": "b294455d08b8184ae2de44f480bed61b208a136f4272fe14ffe9df4f6b967841"
+    },
+    {
+      "path": "data/public/input/task_74/context/json/colour.json",
+      "bytes": 1971,
+      "mtime_ns": 1774926614186579100,
+      "sha256": "97caf298a73da597874f94fbae9795f901f3c2e31886b52edcc7eb4a00582520"
+    },
+    {
+      "path": "data/public/input/task_74/context/knowledge.md",
+      "bytes": 5603,
+      "mtime_ns": 1774926614179581200,
+      "sha256": "24f61bab8eb72c4de54ad92893ad106bbf5fe8e53b3389805261c62c823d48ad"
+    },
+    {
+      "path": "data/public/input/task_74/task.json",
+      "bytes": 157,
+      "mtime_ns": 1774926614172579300,
+      "sha256": "2ad45d03bd2d8adc81645ca18797c1425aef77136144643e07e0e013636355b2"
+    },
+    {
+      "path": "data/public/input/task_75/context/csv/qualifying.csv",
+      "bytes": 277359,
+      "mtime_ns": 1774926611827153600,
+      "sha256": "bd468177589ee21e7732320d18e811a1f70c889dbab94eed99d27d3654ae2aec"
+    },
+    {
+      "path": "data/public/input/task_75/context/json/drivers.json",
+      "bytes": 237752,
+      "mtime_ns": 1774926611816653700,
+      "sha256": "b2a9b6db2d186c2051ef1ecc40169a4a535aaa688bfc36525676cb9e8cc27533"
+    },
+    {
+      "path": "data/public/input/task_75/context/knowledge.md",
+      "bytes": 5698,
+      "mtime_ns": 1774926611808651100,
+      "sha256": "bf2553ad3f9b802af77fc99dc8c12b78457ab09c2c94d57b93a6f3c3c9cbc9bb"
+    },
+    {
+      "path": "data/public/input/task_75/task.json",
+      "bytes": 176,
+      "mtime_ns": 1774926611800930400,
+      "sha256": "deca43688f2c58cb2b9b5915d42f52138ca196dc3f07807f989af7b924c396bf"
+    },
+    {
+      "path": "data/public/input/task_80/context/csv/qualifying.csv",
+      "bytes": 277359,
+      "mtime_ns": 1774926617423580600,
+      "sha256": "bd468177589ee21e7732320d18e811a1f70c889dbab94eed99d27d3654ae2aec"
+    },
+    {
+      "path": "data/public/input/task_80/context/json/drivers.json",
+      "bytes": 237752,
+      "mtime_ns": 1774926617412577700,
+      "sha256": "b2a9b6db2d186c2051ef1ecc40169a4a535aaa688bfc36525676cb9e8cc27533"
+    },
+    {
+      "path": "data/public/input/task_80/context/knowledge.md",
+      "bytes": 5698,
+      "mtime_ns": 1774926617405077800,
+      "sha256": "bf2553ad3f9b802af77fc99dc8c12b78457ab09c2c94d57b93a6f3c3c9cbc9bb"
+    },
+    {
+      "path": "data/public/input/task_80/task.json",
+      "bytes": 159,
+      "mtime_ns": 1774926617398577700,
+      "sha256": "f656aca0998f6bd1aba35124ee14211eb21904ec2f1b465a76428c1a3096b877"
+    },
+    {
+      "path": "data/public/input/task_86/context/csv/driverStandings.csv",
+      "bytes": 827136,
+      "mtime_ns": 1774926614304425400,
+      "sha256": "f48d0363b397481c5ac0039b6714db9c005a6e4b647a954c67db176655703790"
+    },
+    {
+      "path": "data/public/input/task_86/context/csv/races.csv",
+      "bytes": 100343,
+      "mtime_ns": 1774926614295925500,
+      "sha256": "1de3d372571e758c585cfab82c3c6f738bdf3a82ce5ddffdb159ddf5580a8ede"
+    },
+    {
+      "path": "data/public/input/task_86/context/json/drivers.json",
+      "bytes": 237752,
+      "mtime_ns": 1774926614288424900,
+      "sha256": "b2a9b6db2d186c2051ef1ecc40169a4a535aaa688bfc36525676cb9e8cc27533"
+    },
+    {
+      "path": "data/public/input/task_86/context/knowledge.md",
+      "bytes": 5698,
+      "mtime_ns": 1774926614281570800,
+      "sha256": "bf2553ad3f9b802af77fc99dc8c12b78457ab09c2c94d57b93a6f3c3c9cbc9bb"
+    },
+    {
+      "path": "data/public/input/task_86/task.json",
+      "bytes": 139,
+      "mtime_ns": 1774926614276071300,
+      "sha256": "afd4ff4904312c11dded13e7934119be73408bc8daefb0721f7725bd94cdaf88"
+    },
+    {
+      "path": "data/public/input/task_89/context/csv/results.csv",
+      "bytes": 1229092,
+      "mtime_ns": 1774926617656124900,
+      "sha256": "6c4d1e49e60504539a71c958d0103645160ec23c8caf667e88c83f1b6c2cc1a0"
+    },
+    {
+      "path": "data/public/input/task_89/context/json/races.json",
+      "bytes": 244294,
+      "mtime_ns": 1774926617642114300,
+      "sha256": "df81dd52e4a0aec76e8d462790ff8a01a4b7789534598bf8525d70492b5bfba5"
+    },
+    {
+      "path": "data/public/input/task_89/context/knowledge.md",
+      "bytes": 5698,
+      "mtime_ns": 1774926617635612700,
+      "sha256": "bf2553ad3f9b802af77fc99dc8c12b78457ab09c2c94d57b93a6f3c3c9cbc9bb"
+    },
+    {
+      "path": "data/public/input/task_89/task.json",
+      "bytes": 154,
+      "mtime_ns": 1774926617629602400,
+      "sha256": "991bbee36c043de4582d4e70cec04952c4296f95da9387f7bcd001a2da73de8f"
+    },
+    {
+      "path": "data/public/output/task_11/gold.csv",
+      "bytes": 62,
+      "mtime_ns": 1774926620856708800,
+      "sha256": "51e8540e03a645cee3fbae8fb2501095c5e74272c1dbf679c7a19c53c6cb20cf"
+    },
+    {
+      "path": "data/public/output/task_145/gold.csv",
+      "bytes": 11,
+      "mtime_ns": 1774926620996723100,
+      "sha256": "6c0b4e4d5dfe9447f2228071e488f4cab20b9fbc8085fc86045113d6bf8554e3"
+    },
+    {
+      "path": "data/public/output/task_163/gold.csv",
+      "bytes": 35,
+      "mtime_ns": 1774926621039735800,
+      "sha256": "f97e1cb54d7c0582bfbe58c6ab47d63b8a69fe308ff2eed31eee79d4c0b778a3"
+    },
+    {
+      "path": "data/public/output/task_169/gold.csv",
+      "bytes": 45,
+      "mtime_ns": 1774926620816197500,
+      "sha256": "e47e19e5fab1b36604107682506ed0e760a0c457d05de0033c9f8764653991f7"
+    },
+    {
+      "path": "data/public/output/task_173/gold.csv",
+      "bytes": 19,
+      "mtime_ns": 1774926621032735500,
+      "sha256": "6deba81f37b73bb6e64d8785fbc9cb3ab425f16e755eb772fbd996a971eedb1d"
+    },
+    {
+      "path": "data/public/output/task_180/gold.csv",
+      "bytes": 104,
+      "mtime_ns": 1774926621073750700,
+      "sha256": "79e2e1ddea8491d0ac312c2eb1c1e0ec186502b9c22a235bad359dcc02052995"
+    },
+    {
+      "path": "data/public/output/task_19/gold.csv",
+      "bytes": 67,
+      "mtime_ns": 1774926620945723100,
+      "sha256": "94c304d03b276afd5eebce850f6a2a45db05487f13094cec670ad38bd040f4a3"
+    },
+    {
+      "path": "data/public/output/task_194/gold.csv",
+      "bytes": 75,
+      "mtime_ns": 1774926621122116700,
+      "sha256": "2e95b8b47014946cc2755912708b48fbea525552de6f8f49fe353daf4142591e"
+    },
+    {
+      "path": "data/public/output/task_196/gold.csv",
+      "bytes": 58,
+      "mtime_ns": 1774926620834209900,
+      "sha256": "00a0082ce3a98c3ece75a9da5af6a3edb2b4aa3d0b1ff7a5b626265bf3334e22"
+    },
+    {
+      "path": "data/public/output/task_199/gold.csv",
+      "bytes": 168,
+      "mtime_ns": 1774926620772765600,
+      "sha256": "ae36cb472de2e0fd89a8b73f404e1865d701eea2a4ad376d2c88f3a0208aeb8e"
+    },
+    {
+      "path": "data/public/output/task_200/gold.csv",
+      "bytes": 22,
+      "mtime_ns": 1774926620780693600,
+      "sha256": "db069ca1830fbaa0d5ea80017e16c7da2bd68fb9a83da876e86fc5bd05d4f70a"
+    },
+    {
+      "path": "data/public/output/task_214/gold.csv",
+      "bytes": 17,
+      "mtime_ns": 1774926620938723500,
+      "sha256": "7a4bf6f6419a431df2f7e0b94a22a8d6569804ad6a86d1f53c7762f0491073c5"
+    },
+    {
+      "path": "data/public/output/task_218/gold.csv",
+      "bytes": 23,
+      "mtime_ns": 1774926621115394200,
+      "sha256": "0c39d70efa0d909f3a533d9c568656d13542b74c99238513e12d382c464940f8"
+    },
+    {
+      "path": "data/public/output/task_22/gold.csv",
+      "bytes": 39,
+      "mtime_ns": 1774926620807192300,
+      "sha256": "99041f6cf6af617d3abc7a2f2835b2a2b6d77c3431a79384ecf968edc52bcbd3"
+    },
+    {
+      "path": "data/public/output/task_24/gold.csv",
+      "bytes": 30,
+      "mtime_ns": 1774926620923714000,
+      "sha256": "c3f820f70d3fdadcd58dffc8b71f94f67ebd3fcbe346014b8c3bf6273c59fb3b"
+    },
+    {
+      "path": "data/public/output/task_243/gold.csv",
+      "bytes": 68,
+      "mtime_ns": 1774926620826196500,
+      "sha256": "bc179e9025f76b9aa74b474d55b0c663a3cd830eb91064c0d69c84b92b85ed69"
+    },
+    {
+      "path": "data/public/output/task_249/gold.csv",
+      "bytes": 67,
+      "mtime_ns": 1774926621046740800,
+      "sha256": "4ca295b2311a982937ce758b598637feefbf74660ddf3ac4f404d998769ce91c"
+    },
+    {
+      "path": "data/public/output/task_25/gold.csv",
+      "bytes": 30,
+      "mtime_ns": 1774926620788692600,
+      "sha256": "751007acab17df5a11187d0e31505ccac3051b5601252b2915e38ef2c5ac5949"
+    },
+    {
+      "path": "data/public/output/task_250/gold.csv",
+      "bytes": 13,
+      "mtime_ns": 1774926621108393200,
+      "sha256": "37aca18066aa8eb8b9ab9e69f33060691a8eb1e6987950447fd124718f28286a"
+    },
+    {
+      "path": "data/public/output/task_257/gold.csv",
+      "bytes": 33,
+      "mtime_ns": 1774926620916214000,
+      "sha256": "d5e7546246075f29b9acd05d5f49f30985ddbb470dcc8fe9a813344dbb9b31e8"
+    },
+    {
+      "path": "data/public/output/task_259/gold.csv",
+      "bytes": 495,
+      "mtime_ns": 1774926621025226700,
+      "sha256": "f37c5a624d8a1a288d289244faaf839b66863acb85c6b8f8b5109691518a3d35"
+    },
+    {
+      "path": "data/public/output/task_26/gold.csv",
+      "bytes": 24,
+      "mtime_ns": 1774926621060239100,
+      "sha256": "8dec23de0e597d7d7430b9d79b018c7cfd5f26e51296a32bf0d3f171b9708c3a"
+    },
+    {
+      "path": "data/public/output/task_261/gold.csv",
+      "bytes": 18,
+      "mtime_ns": 1774926620879209500,
+      "sha256": "661df8cdb28de7899c2599263a8ef389e19c58d899b0520b206e175b7c199d8f"
+    },
+    {
+      "path": "data/public/output/task_269/gold.csv",
+      "bytes": 99,
+      "mtime_ns": 1774926620765267500,
+      "sha256": "02c274c55653ac825aeb9c86f1134446dae32672661af6fa7918b6987d8f9cca"
+    },
+    {
+      "path": "data/public/output/task_27/gold.csv",
+      "bytes": 58,
+      "mtime_ns": 1774926621094893000,
+      "sha256": "eb72f4fb060457f59aa124021fa8165a3581b17d4356c0328231a4b11815a01d"
+    },
+    {
+      "path": "data/public/output/task_283/gold.csv",
+      "bytes": 99,
+      "mtime_ns": 1774926620909209600,
+      "sha256": "ead3534ddfae26ba249773275b78a0a54c25ea7d1f5ba1b999991aead767e862"
+    },
+    {
+      "path": "data/public/output/task_287/gold.csv",
+      "bytes": 16,
+      "mtime_ns": 1774926620989724200,
+      "sha256": "2b4769cebfde826fcc1031c94e2deacac4961277e01a9c80afafb54882b60fa6"
+    },
+    {
+      "path": "data/public/output/task_292/gold.csv",
+      "bytes": 51,
+      "mtime_ns": 1774926621067249700,
+      "sha256": "9622f8ef58b86d31c6fedfd30c85f6426dc1e220eef6548d1e411650c5261e96"
+    },
+    {
+      "path": "data/public/output/task_303/gold.csv",
+      "bytes": 124,
+      "mtime_ns": 1774926620864209600,
+      "sha256": "96fc11680e254205dd2056d66b38fb28f3c0f21b17d7379cb6c6e74375b7f729"
+    },
+    {
+      "path": "data/public/output/task_305/gold.csv",
+      "bytes": 26,
+      "mtime_ns": 1774926620901210200,
+      "sha256": "ead88d105732ffc9bb4b8591cc321c6096622827ce89266bca4bd8cef950f858"
+    },
+    {
+      "path": "data/public/output/task_330/gold.csv",
+      "bytes": 36,
+      "mtime_ns": 1774926621129117900,
+      "sha256": "5c40e834933f369870bb292cbedb5c91b3272b40c46f2bc6fbb29024d751bc77"
+    },
+    {
+      "path": "data/public/output/task_344/gold.csv",
+      "bytes": 26,
+      "mtime_ns": 1774926621018225900,
+      "sha256": "6846a0e89a652e5aec1e5df4ce7b26aa17492b1c16472d4e9607dde38ca0cde2"
+    },
+    {
+      "path": "data/public/output/task_349/gold.csv",
+      "bytes": 22,
+      "mtime_ns": 1774926620886208400,
+      "sha256": "07ab78d3934bc2c441095b642f7e989ddd26d9687d36d3e24a99bc61646c6095"
+    },
+    {
+      "path": "data/public/output/task_350/gold.csv",
+      "bytes": 23,
+      "mtime_ns": 1774926620871709900,
+      "sha256": "3190d20ed36e41e7241d0b89198e543b032ed1a850c4c2253d6d60ff1b83277e"
+    },
+    {
+      "path": "data/public/output/task_352/gold.csv",
+      "bytes": 185,
+      "mtime_ns": 1774926620961223400,
+      "sha256": "bd971262fe53490f48bbf0b02bfb0355e00e600dad94562f5ec57cc5c86f5c40"
+    },
+    {
+      "path": "data/public/output/task_355/gold.csv",
+      "bytes": 47,
+      "mtime_ns": 1774926620849209200,
+      "sha256": "1faf777d5a2b821628a61ccf7fe398896e227e67a5b3a7934603b1fd44437412"
+    },
+    {
+      "path": "data/public/output/task_379/gold.csv",
+      "bytes": 32,
+      "mtime_ns": 1774926621081057900,
+      "sha256": "afe025e8c21f7d33e8276872b8e07b550d4bbdedbae57f858efe5a915816fa07"
+    },
+    {
+      "path": "data/public/output/task_38/gold.csv",
+      "bytes": 1130,
+      "mtime_ns": 1774926621011223100,
+      "sha256": "c67af91384c7243ca6c8a1b61bc68e94816209125252014803ad8e5ace5e07fd"
+    },
+    {
+      "path": "data/public/output/task_396/gold.csv",
+      "bytes": 129,
+      "mtime_ns": 1774926621003722700,
+      "sha256": "977537823fe8eb40df5122323381c39e9b836edf95543d795d65cccab72d9148"
+    },
+    {
+      "path": "data/public/output/task_408/gold.csv",
+      "bytes": 191,
+      "mtime_ns": 1774926620975726700,
+      "sha256": "dbdbf753716696e9646196d8703f9ffb892df20ff650aca5d8cea247ed530ed8"
+    },
+    {
+      "path": "data/public/output/task_415/gold.csv",
+      "bytes": 66,
+      "mtime_ns": 1774926620797192400,
+      "sha256": "e5ed05430e61c178c4b8f70b9bd147457e966eaed5ba4135ca79d4a06f43574a"
+    },
+    {
+      "path": "data/public/output/task_418/gold.csv",
+      "bytes": 26,
+      "mtime_ns": 1774926621088056700,
+      "sha256": "b20e92ebc783e45cc5c77a34b4c88c3026d5ab52d9cd8afbe7acd8ac67f9e920"
+    },
+    {
+      "path": "data/public/output/task_420/gold.csv",
+      "bytes": 101,
+      "mtime_ns": 1774926620968224800,
+      "sha256": "5b4140ab48d7f0672cd55c897315c01eb5f974e26acee54623a414ba9adec7bb"
+    },
+    {
+      "path": "data/public/output/task_64/gold.csv",
+      "bytes": 59,
+      "mtime_ns": 1774926620982723500,
+      "sha256": "f81793fc3f3baa5933c18a603d2ecf03248faaa1de82ba472c4fb27728a78929"
+    },
+    {
+      "path": "data/public/output/task_67/gold.csv",
+      "bytes": 38,
+      "mtime_ns": 1774926620841710900,
+      "sha256": "a491713f05e44f0f7c9108c4fb43ba74674ca69cc05f107ccac8da2b90095d20"
+    },
+    {
+      "path": "data/public/output/task_74/gold.csv",
+      "bytes": 15,
+      "mtime_ns": 1774926620931724200,
+      "sha256": "c9dad7ebb2b1ed87c2cf163707cb4ea5910df4fd30c82c921c42a9b2917af164"
+    },
+    {
+      "path": "data/public/output/task_75/gold.csv",
+      "bytes": 21,
+      "mtime_ns": 1774926620893709800,
+      "sha256": "55dbcfb1f48eda839c2ca50f1bae65ecc8ab206e529d2938feb5324be1d4af77"
+    },
+    {
+      "path": "data/public/output/task_80/gold.csv",
+      "bytes": 14,
+      "mtime_ns": 1774926621053238900,
+      "sha256": "84cd85bb0c7f9e34adb3a655928a3cd4ee53f333c266a8eb82dcf4500e1b27f0"
+    },
+    {
+      "path": "data/public/output/task_86/gold.csv",
+      "bytes": 344,
+      "mtime_ns": 1774926620953723400,
+      "sha256": "5fa6362fd751976d432bdddf87d6744506744b7402bbfe13ffb012eae4ee797e"
+    },
+    {
+      "path": "data/public/output/task_89/gold.csv",
+      "bytes": 15,
+      "mtime_ns": 1774926621101394600,
+      "sha256": "2243633f0baa45d704d43a2c73cfa2b18c1b0c67fe3332c2c711cf8c4a9ac911"
+    },
+    {
+      "path": "data/public/README.md",
+      "bytes": 2822,
+      "mtime_ns": 1774926610408044100,
+      "sha256": "ad7eeb8c0583b010572d6e2e2ed6e623ddadb49dc174e4a2af6350cb8ebb3aec"
+    }
+  ]
+}

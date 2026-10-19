@@ -1,0 +1,13 @@
+{
+  "python_syntax": "passed",
+  "files": [
+    "src/data_agent_baseline/agents/prompt.py",
+    "src/data_agent_baseline/agents/react.py",
+    "src/data_agent_baseline/agents/runtime.py",
+    "src/data_agent_baseline/agents/shape_hints.py"
+  ],
+  "full_benchmark": "not_run",
+  "reason": "Archival snapshot; no new evaluation or implementation change.",
+  "import_smoke": "passed",
+  "shape_hint_smoke": "CSV/SQLite/JSON name-pair and non-name cases passed"
+}

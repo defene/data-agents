@@ -1,5 +1,7 @@
 # data-agents
 
+See the [2026-10-19 progress archive](docs/progress-20261019/README.md) for the code snapshot, historical experiment reports, and local dataset cleanup records. Restore the dataset before running locally after cleanup.
+
 English | [中文](README.zh.md)
 
 This repository is my competition project for **KDD Cup 2026 DataAgent-Bench**.  

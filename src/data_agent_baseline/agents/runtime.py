@@ -225,6 +225,7 @@ class AgentRuntimeState:
     answer: AnswerTable | None = None
     failure_reason: str | None = None
     data_profile_text: str = ""
+    shape_hints_text: str = ""
 
 
 @dataclass(frozen=True, slots=True)

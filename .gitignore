@@ -32,6 +32,7 @@ docs/*
 !docs/AGENT_EXPERIMENT_PROTOCOL.md
 !docs/AGENT_EXPERIMENT_TEMPLATE.md
 !docs/AGENT_POLICY_REFACTOR_PLAN.md
+!docs/progress-20261019/
 
 # Local configs
 configs/*
